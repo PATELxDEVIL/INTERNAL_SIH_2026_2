@@ -1,0 +1,102 @@
+{
+  "config": {
+    "logos": {
+      "sih": "/uploads/36cd64cc-fc9f-4c36-9123-6b93fa968ce0.png",
+      "ksv": "/uploads/6d315b8f-9a0a-427f-b90f-7c86963b3158.png",
+      "vsitr": "/uploads/507247ec-3ad9-4bfd-ae92-aaaea001e922.png"
+    },
+    "heroMedia": [],
+    "deadline": "2026-07-25T22:55",
+    "registrationHeading": "Login Closes In",
+    "registrationButtonText": "Login",
+    "registrationButtonLink": "/team/login"
+  },
+  "problemStatements": [
+    {
+      "id": "PS-04b46b9b",
+      "title": "carpolling",
+      "description": "rdtx",
+      "pdfUrl": "/uploads/03dbceb8-64f8-4c7b-8179-4af577c37d74.pdf",
+      "isLive": false,
+      "createdAt": "2026-07-24T11:39:35.632Z"
+    },
+    {
+      "id": "PS-a5611d2e",
+      "title": "rental",
+      "description": "dscdvd",
+      "pdfUrl": "/uploads/3e998c66-b9b6-4ad7-9983-5924e704dceb.pdf",
+      "isLive": false,
+      "createdAt": "2026-07-24T15:40:06.369Z"
+    }
+  ],
+  "teams": [
+    {
+      "teamId": "SIH2026-001",
+      "teamName": "Dev",
+      "password": "$2b$10$oO.JBOISOIQiFeH/WZFOF.m31KpjIWt.KWWZiHxo/2mc9UE3lyBKm",
+      "leader": {
+        "name": "Devang Patel",
+        "gender": "Male",
+        "enrollment": "256118919818",
+        "semester": "7",
+        "department": "Computer Engineering",
+        "phone": "7852119191",
+        "email": "devangpatel1972003@gmail.com"
+      },
+      "members": [
+        {
+          "name": "Devang Patel",
+          "gender": "Male",
+          "enrollment": "21818189189189189",
+          "semester": "1",
+          "department": "Computer Engineering",
+          "phone": "7801952840",
+          "email": "patelnirja2840@gmail.com"
+        },
+        {
+          "name": "bvvyvyv",
+          "gender": "Male",
+          "enrollment": "481891891819118",
+          "semester": "3",
+          "department": "Computer Engineering",
+          "phone": "5151118181",
+          "email": "patelnirja2840@gmail.com"
+        },
+        {
+          "name": "vyv",
+          "gender": "Male",
+          "enrollment": "58881919",
+          "semester": "4",
+          "department": "Computer Engineering",
+          "phone": "2188181818",
+          "email": "patelnirja2840@gmail.com"
+        },
+        {
+          "name": "vfgxcrtc",
+          "gender": "Male",
+          "enrollment": "118181818181",
+          "semester": "4",
+          "department": "Computer Engineering",
+          "phone": "9944949494",
+          "email": "patelnirja2840@gmail.com"
+        },
+        {
+          "name": "bhuiguh",
+          "gender": "Female",
+          "enrollment": "84848484",
+          "semester": "5",
+          "department": "Computer Engineering",
+          "phone": "5194844449",
+          "email": "patelnirja2840@gmail.com"
+        }
+      ],
+      "mentor": null,
+      "status": "Pending Mentor Details",
+      "createdAt": "2026-07-24T11:56:35.723Z"
+    }
+  ],
+  "admin": {
+    "username": "admin",
+    "password": "password"
+  }
+}

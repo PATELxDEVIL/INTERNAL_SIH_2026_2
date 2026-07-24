@@ -1,0 +1,87 @@
+.navbar {
+  position: sticky;
+  top: 0;
+  background-color: var(--white);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  padding: 1rem 0;
+}
+
+.navContainer {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  padding: 0 2rem;
+  gap: 4rem;
+}
+
+.logoSection {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.logoWrapper {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.logo {
+  height: 55px;
+  width: auto;
+  object-fit: contain;
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--primary-blue);
+  margin-left: 1rem;
+  border-left: 2px solid #eee;
+  padding-left: 1rem;
+}
+
+.navLinks {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.navLink {
+  font-weight: 500;
+  color: var(--text-dark);
+  transition: color 0.3s ease;
+  position: relative;
+}
+
+.navLink:hover {
+  color: var(--primary-red);
+}
+
+.navLink::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -4px;
+  left: 0;
+  background: var(--gradient-primary);
+  transition: width 0.3s ease;
+}
+
+.navLink:hover::after,
+.activeLink::after {
+  width: 100%;
+}
+
+.activeLink {
+  color: var(--primary-blue);
+  font-weight: 600;
+}
+
+@media (max-width: 900px) {
+  .navLinks {
+    display: none; /* In a real app, implement a hamburger menu here */
+  }
+}

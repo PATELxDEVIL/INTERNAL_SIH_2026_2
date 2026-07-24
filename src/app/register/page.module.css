@@ -1,0 +1,204 @@
+.pageContainer {
+  padding: 4rem 1rem;
+  background-color: var(--bg-color);
+  min-height: 100vh;
+}
+
+.formCard {
+  background: var(--white);
+  max-width: 800px;
+  margin: 0 auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  padding: 2rem;
+  border-top: 4px solid var(--primary-red);
+}
+
+.title {
+  text-align: center;
+  color: var(--primary-blue);
+  margin-bottom: 2rem;
+}
+
+.stepper {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.stepper::before {
+  content: '';
+  position: absolute;
+  top: 15px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #eee;
+  z-index: 1;
+}
+
+.step {
+  position: relative;
+  z-index: 2;
+  background: var(--white);
+  padding: 0 1rem;
+  text-align: center;
+  color: #999;
+  font-weight: 600;
+}
+
+.activeStep {
+  color: var(--primary-blue);
+}
+
+.stepNumber {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #eee;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 0.5rem;
+}
+
+.activeStep .stepNumber {
+  background: var(--gradient-primary);
+  color: var(--white);
+}
+
+.formGroup {
+  margin-bottom: 1.5rem;
+}
+
+.label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--text-dark);
+}
+
+.input, .select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+.input:focus, .select:focus {
+  outline: none;
+  border-color: var(--primary-blue);
+  box-shadow: 0 0 0 2px rgba(27, 63, 139, 0.1);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.memberCard {
+  border: 1px solid #eee;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.memberHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  color: var(--primary-blue);
+  font-weight: 600;
+}
+
+.removeBtn {
+  background: #ff4d4f;
+  color: white;
+  border: none;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+}
+
+.addBtn {
+  background: #e6f7ff;
+  color: var(--primary-blue);
+  border: 1px dashed var(--primary-blue);
+  width: 100%;
+  padding: 1rem;
+  border-radius: 4px;
+  font-weight: 600;
+  margin-bottom: 2rem;
+  transition: all 0.3s;
+}
+
+.addBtn:hover {
+  background: #bae7ff;
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
+}
+
+.btnSecondary {
+  background: #f0f0f0;
+  color: var(--text-dark);
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+/* Modals */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.modalContent {
+  background: var(--white);
+  padding: 2rem;
+  border-radius: 8px;
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+
+.modalError {
+  border-top: 4px solid #ff4d4f;
+}
+
+.modalSuccess {
+  border-top: 4px solid #52c41a;
+}
+
+.modalTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.modalError .modalTitle { color: #ff4d4f; }
+.modalSuccess .modalTitle { color: #52c41a; }
+
+.modalText {
+  margin-bottom: 1.5rem;
+  color: var(--text-dark);
+}

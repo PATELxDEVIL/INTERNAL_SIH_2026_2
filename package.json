@@ -1,0 +1,27 @@
+{
+  "name": "internal_sih_2026",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@neondatabase/serverless": "^1.1.0",
+    "bcryptjs": "^3.0.3",
+    "next": "^16.2.11",
+    "nodemailer": "^9.0.3",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "uuid": "^14.0.1"
+  },
+  "devDependencies": {
+    "dotenv": "^17.4.2"
+  }
+}

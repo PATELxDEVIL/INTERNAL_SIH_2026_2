@@ -1,0 +1,67 @@
+.problemsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.problemCard {
+  background: var(--white);
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.problemCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+}
+
+.problemHeader {
+  background: var(--gradient-primary);
+  padding: 1.5rem;
+  color: var(--white);
+}
+
+.problemTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.problemContent {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.problemDesc {
+  color: var(--text-dark);
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  flex-grow: 1;
+  white-space: pre-wrap;
+}
+
+.pdfLink {
+  display: inline-block;
+  background-color: #F3F4F6;
+  color: var(--primary-blue);
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  margin-top: auto;
+}
+
+.pdfLink:hover {
+  background-color: var(--primary-blue);
+  color: var(--white);
+}

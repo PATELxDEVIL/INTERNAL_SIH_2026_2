@@ -1,0 +1,325 @@
+.heroSection {
+  position: relative;
+  width: 100%;
+  height: 80vh;
+  min-height: 600px;
+  background-color: #f0f0f0; /* Fallback */
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sliderContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+  background-size: cover;
+  background-position: center;
+}
+
+.activeSlide {
+  opacity: 1;
+}
+
+.heroOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(30, 30, 42, 0.4); /* Dark slate overlay for text readability */
+  z-index: 2;
+}
+
+.heroContent {
+  position: relative;
+  z-index: 3;
+  text-align: center;
+  color: var(--white);
+  padding: 2rem;
+  max-width: 800px;
+}
+
+.heroTitle {
+  font-size: 4rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3); /* Need a shadow since gradient is transparent */
+  /* Re-evaluating: transparent gradient with shadow is tricky. Let's use a solid white title with a gradient background box, or just gradient text if background is light. 
+     Wait, hero overlay is dark. Gradient text won't pop as much as white. Let's stick to gradient text but with white text-shadow for pop, or vice versa. 
+     Actually, let's use White text with a gradient underline for the hero, or follow instructions:
+     "INTERNAL SIH 2026" — large, bold, gradient text (red → blue) */
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  /* Add drop shadow to the gradient text via filter */
+  filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.5));
+}
+
+.heroTagline {
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
+  font-weight: 500;
+}
+
+.sliderControls {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 4;
+  display: flex;
+  gap: 1rem;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: rgba(255,255,255,0.5);
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.activeDot {
+  background-color: var(--white);
+}
+
+.section {
+  padding: 4rem 0;
+}
+
+.countdownSection {
+  background-color: var(--white);
+  text-align: center;
+  padding: 2rem;
+  margin: 2rem auto;
+  position: relative;
+  z-index: 10;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  max-width: 800px;
+  border-top: 4px solid var(--primary-red);
+}
+
+.countdownTimer {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin: 2rem 0;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--primary-blue);
+}
+
+.countdownBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.countdownLabel {
+  font-size: 0.875rem;
+  color: var(--text-dark);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.ctaSection {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.deadlineText {
+  display: block;
+  font-size: 0.875rem;
+  color: #666;
+  margin-top: 0.5rem;
+}
+
+/* Accordion */
+.accordionItem {
+  margin-bottom: 1rem;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  background: var(--white);
+  overflow: hidden;
+}
+
+.accordionHeader {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  text-align: left;
+  background: none;
+  border: none;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--primary-blue);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+}
+
+.accordionContent {
+  padding: 0 1.5rem 1.5rem;
+  color: var(--text-dark);
+  border-top: 1px solid #eee;
+}
+
+/* Clubs Grid */
+.clubsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.clubCard {
+  background: var(--white);
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  position: relative;
+}
+
+.clubCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--gradient-primary);
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.clubName {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: var(--primary-blue);
+}
+
+.footer {
+  background: #111827; /* Darker more premium slate */
+  color: var(--white);
+  padding: 3rem 0 1rem 0;
+  border-top: 4px solid var(--primary-red);
+}
+
+.footerContent {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-wrap: wrap;
+  width: 100%;
+  padding: 0 4rem;
+  gap: 4rem;
+  margin-bottom: 2rem;
+}
+
+.footerLeft {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.footerLogos {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.footerLogos img {
+  height: 55px; /* Increased size to match navbar */
+  width: auto;
+  background-color: transparent; /* Removed white box for premium look */
+  object-fit: contain;
+}
+
+.footerTitle {
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: var(--white);
+  border-left: 2px solid #374151;
+  padding-left: 1.5rem;
+}
+
+.footerNav {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.footerNav a {
+  color: #9CA3AF;
+  font-weight: 500;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.footerNav a:hover {
+  color: var(--white);
+}
+
+.footerNav a::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -4px;
+  left: 0;
+  background: var(--gradient-primary);
+  transition: width 0.3s ease;
+}
+
+.footerNav a:hover::after {
+  width: 100%;
+}
+
+.footerBottom {
+  width: 100%;
+  text-align: center;
+  padding-top: 2rem;
+  border-top: 1px solid #374151;
+  color: #6B7280;
+  font-size: 0.9rem;
+}
+
+.statusCard {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  border-radius: 8px;
+  background: var(--white);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.statusPending {
+  border-left: 6px solid var(--accent-gold);
+}
+
+.statusComplete {
+  border-left: 6px solid #28a745;
+}
