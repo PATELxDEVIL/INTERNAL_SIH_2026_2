@@ -8,6 +8,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const [config, setConfig] = useState({ logos: null });
   const [configLoaded, setConfigLoaded] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     fetch('/api/admin/config')
@@ -48,11 +49,20 @@ export default function Navbar() {
           </div>
           <div className={styles.title}>Internal SIH 2026</div>
         </div>
-        <div className={styles.navLinks}>
+
+        {/* Hamburger Icon */}
+        <div className={styles.hamburger} onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+          <div className={`${styles.bar} ${isMobileMenuOpen ? styles.bar1 : ''}`}></div>
+          <div className={`${styles.bar} ${isMobileMenuOpen ? styles.bar2 : ''}`}></div>
+          <div className={`${styles.bar} ${isMobileMenuOpen ? styles.bar3 : ''}`}></div>
+        </div>
+
+        <div className={`${styles.navLinks} ${isMobileMenuOpen ? styles.navLinksMobileOpen : ''}`}>
           <Link 
             href="/" 
             className={`${styles.navLink} ${pathname === '/' ? styles.activeLink : ''}`}
             onClick={(e) => {
+              setIsMobileMenuOpen(false);
               if (pathname === '/') {
                 e.preventDefault();
                 window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -61,12 +71,12 @@ export default function Navbar() {
           >
             Home
           </Link>
-          <Link href="/#rules" className={`${styles.navLink} ${pathname === '/rules' ? styles.activeLink : ''}`}>Rules & FAQ</Link>
-          <Link href="/#clubs" className={`${styles.navLink} ${pathname === '/clubs' ? styles.activeLink : ''}`}>Clubs</Link>
-          <Link href="/register" className={`${styles.navLink} ${pathname === '/register' ? styles.activeLink : ''}`}>Register Your Team</Link>
-          <Link href="/problems" className={`${styles.navLink} ${pathname === '/problems' ? styles.activeLink : ''}`}>Problem Statements</Link>
-          <Link href="/team/login" className={`${styles.navLink} ${pathname === '/team/login' ? styles.activeLink : ''}`}>Team Login</Link>
-          <Link href="/admin/login" className={`${styles.navLink} ${pathname === '/admin/login' ? styles.activeLink : ''}`}>Admin Login</Link>
+          <Link href="/#rules" className={`${styles.navLink} ${pathname === '/rules' ? styles.activeLink : ''}`} onClick={() => setIsMobileMenuOpen(false)}>Rules & FAQ</Link>
+          <Link href="/#clubs" className={`${styles.navLink} ${pathname === '/clubs' ? styles.activeLink : ''}`} onClick={() => setIsMobileMenuOpen(false)}>Clubs</Link>
+          <Link href="/register" className={`${styles.navLink} ${pathname === '/register' ? styles.activeLink : ''}`} onClick={() => setIsMobileMenuOpen(false)}>Register Your Team</Link>
+          <Link href="/problems" className={`${styles.navLink} ${pathname === '/problems' ? styles.activeLink : ''}`} onClick={() => setIsMobileMenuOpen(false)}>Problem Statements</Link>
+          <Link href="/team/login" className={`${styles.navLink} ${pathname === '/team/login' ? styles.activeLink : ''}`} onClick={() => setIsMobileMenuOpen(false)}>Team Login</Link>
+          <Link href="/admin/login" className={`${styles.navLink} ${pathname === '/admin/login' ? styles.activeLink : ''}`} onClick={() => setIsMobileMenuOpen(false)}>Admin Login</Link>
         </div>
       </div>
     </nav>
