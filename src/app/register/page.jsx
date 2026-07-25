@@ -1,5 +1,5 @@
 "use client";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './page.module.css';
 
@@ -21,6 +21,34 @@ export default function Register() {
 
   const [modal, setModal] = useState({ show: false, type: '', title: '', message: '' });
 
+  // Team name live availability check
+  const [teamNameStatus, setTeamNameStatus] = useState(null); // null | 'checking' | 'available' | 'taken' | 'invalid'
+
+  useEffect(() => {
+    setTeamNameStatus(null);
+    if (!teamName.trim() || teamName.trim().length < 3) return;
+
+    // Check for institute name immediately
+    const lower = teamName.toLowerCase();
+    if (lower.includes('vsitr') || lower.includes('vidush somany')) {
+      setTeamNameStatus('invalid');
+      return;
+    }
+
+    setTeamNameStatus('checking');
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/check-team-name?name=${encodeURIComponent(teamName.trim())}`);
+        const data = await res.json();
+        setTeamNameStatus(data.available ? 'available' : 'taken');
+      } catch {
+        setTeamNameStatus(null);
+      }
+    }, 600); // 600ms debounce
+
+    return () => clearTimeout(timer);
+  }, [teamName]);
+
   const closeModal = () => {
     setModal({ show: false, type: '', title: '', message: '' });
     if (modal.type === 'success') {
@@ -35,6 +63,10 @@ export default function Register() {
       if (!teamName.trim()) return showError("Missing Info", "Team Name is required.");
       if (teamName.toLowerCase().includes('vsitr') || teamName.toLowerCase().includes('vidush somany'))
         return showError("Invalid Name", "Team name must not include the institute's name.");
+      if (teamNameStatus === 'taken')
+        return showError("Name Taken", "This team name is already registered. Please choose a different name.");
+      if (teamNameStatus === 'checking')
+        return showError("Please Wait", "Still checking team name availability. Please wait a moment.");
       setStep(2);
     } else if (step === 2) {
       if (!leader.name || !leader.email || !leader.phone || !leader.enrollment || !leader.gender || !leader.semester || !leader.department)
@@ -221,8 +253,36 @@ Please Note: The Team Leader must regularly check their email inbox for further 
                 type="text" 
                 placeholder="Enter unique team name"
                 value={teamName}
-                onChange={e => setTeamName(e.target.value)} 
+                onChange={e => setTeamName(e.target.value)}
+                style={
+                  teamNameStatus === 'taken' || teamNameStatus === 'invalid'
+                    ? { borderColor: '#ff4d4f' }
+                    : teamNameStatus === 'available'
+                    ? { borderColor: '#52c41a' }
+                    : {}
+                }
               />
+              {/* Live status indicator */}
+              {teamNameStatus === 'checking' && (
+                <small style={{ color: '#888', marginTop: '0.4rem', display: 'block' }}>
+                  🔄 Checking availability...
+                </small>
+              )}
+              {teamNameStatus === 'available' && (
+                <small style={{ color: '#52c41a', marginTop: '0.4rem', display: 'block', fontWeight: 600 }}>
+                  ✅ Team name is available!
+                </small>
+              )}
+              {teamNameStatus === 'taken' && (
+                <small style={{ color: '#ff4d4f', marginTop: '0.4rem', display: 'block', fontWeight: 600 }}>
+                  ❌ This team name is already registered. Please choose another.
+                </small>
+              )}
+              {teamNameStatus === 'invalid' && (
+                <small style={{ color: '#ff4d4f', marginTop: '0.4rem', display: 'block', fontWeight: 600 }}>
+                  ❌ Team name must not include the institute's name (VSITR / Vidush Somany).
+                </small>
+              )}
               <small style={{color: '#666', marginTop: '0.5rem', display: 'block'}}>
                 Must not contain institute name (e.g., VSITR, Vidush Somany)
               </small>
