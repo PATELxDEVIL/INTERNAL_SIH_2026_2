@@ -161,6 +161,15 @@ export default function AdminDashboard() {
     
     if (files.length > 0) {
       const file = files[0];
+      
+      // Vercel Serverless Functions have a strict 4.5MB request limit.
+      // Base64 encoding adds ~33% overhead. So limit file to ~2.5MB.
+      const maxSizeInBytes = 2.5 * 1024 * 1024; // 2.5 MB
+      if (file.size > maxSizeInBytes) {
+        alert("The PDF file is too large! Please compress it to under 2.5MB before uploading. Vercel's free tier cannot process larger files.");
+        return;
+      }
+
       const reader = new FileReader();
       const base64Data = await new Promise((resolve) => {
         reader.onload = (e) => resolve(e.target.result);
