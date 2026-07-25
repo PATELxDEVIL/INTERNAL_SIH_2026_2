@@ -4,35 +4,14 @@
   min-height: calc(100vh - 80px);
 }
 
-.loginContainer {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
-  padding: 1rem;
-}
-
 .loginCard {
   background: var(--white);
-  padding: 3rem 2.5rem;
-  border-radius: 24px;
-  box-shadow: 0 25px 50px -12px rgba(0,0,0,0.15);
-  max-width: 420px;
-  width: 100%;
-  border: 1px solid rgba(255,255,255,0.8);
-  position: relative;
-  overflow: hidden;
-}
-
-.loginCard::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 6px;
-  background: linear-gradient(90deg, var(--primary-blue), var(--primary-red));
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  max-width: 400px;
+  margin: 0 auto;
+  border-top: 4px solid var(--primary-blue);
 }
 
 .dashboardHeader {
@@ -143,25 +122,13 @@
   display: block;
   font-weight: 600;
   margin-bottom: 0.5rem;
-  color: #334155;
-  font-size: 0.9rem;
 }
 
 .input {
   width: 100%;
-  padding: 0.85rem 1rem;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
-  background-color: #f8fafc;
-  color: #0f172a;
-  transition: all 0.2s ease;
-  font-size: 1rem;
-}
-.input:focus {
-  outline: none;
-  border-color: var(--primary-blue);
-  box-shadow: 0 0 0 3px rgba(27, 63, 139, 0.15);
-  background-color: var(--white);
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
 }
 
 .grid2Col {
