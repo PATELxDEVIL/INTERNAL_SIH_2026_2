@@ -289,7 +289,7 @@ export default function AdminDashboard() {
           </table>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+        <div className={styles.grid2Col}>
           <div className={styles.settingsSection}>
             <h2 className={styles.settingsTitle}>Reset Team Password</h2>
             <form onSubmit={handlePasswordReset}>
@@ -436,7 +436,7 @@ export default function AdminDashboard() {
 
         <div className={styles.settingsSection}>
           <h2 className={styles.settingsTitle}>Problem Statements Management</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+          <div className={styles.grid2Col}>
             <div>
               <h3>Add New Problem Statement</h3>
               <form onSubmit={handleProblemSubmit} style={{ marginTop: '1rem' }}>

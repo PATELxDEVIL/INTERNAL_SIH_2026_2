@@ -323,3 +323,60 @@
 .statusComplete {
   border-left: 6px solid #28a745;
 }
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .heroTitle {
+    font-size: 2.5rem;
+  }
+  
+  .heroTagline {
+    font-size: 1.1rem;
+  }
+  
+  .heroSection {
+    min-height: 400px;
+    height: auto;
+    padding: 4rem 0;
+  }
+
+  .countdownTimer {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 1rem;
+    font-size: 1.8rem;
+  }
+  
+  .countdownBox {
+    margin: 0.5rem;
+  }
+
+  .footerContent {
+    flex-direction: column;
+    padding: 0 1rem;
+    gap: 2rem;
+    align-items: center;
+    text-align: center;
+  }
+
+  .footerLeft {
+    flex-direction: column;
+  }
+
+  .footerTitle {
+    border-left: none;
+    border-top: 2px solid #374151;
+    padding-left: 0;
+    padding-top: 1rem;
+    margin-top: 1rem;
+  }
+
+  .footerNav {
+    justify-content: center;
+  }
+
+  .clubsGrid {
+    grid-template-columns: 1fr;
+  }
+}
+

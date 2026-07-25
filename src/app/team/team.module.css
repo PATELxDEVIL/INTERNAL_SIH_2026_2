@@ -98,3 +98,20 @@
   grid-template-columns: 1fr 1fr;
   gap: 1.5rem;
 }
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .container {
+    padding: 2rem 1rem;
+  }
+  
+  .card {
+    padding: 1.5rem;
+  }
+  
+  .row {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+

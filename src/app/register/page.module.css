@@ -202,3 +202,46 @@
   margin-bottom: 1.5rem;
   color: var(--text-dark);
 }
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .pageContainer {
+    padding: 2rem 1rem;
+  }
+  
+  .formCard {
+    padding: 1.5rem;
+  }
+  
+  .row {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .stepper {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+  
+  .stepper::before {
+    top: 0;
+    bottom: 0;
+    left: 15px;
+    height: auto;
+    width: 2px;
+  }
+  
+  .step {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0;
+    background: transparent;
+  }
+  
+  .stepNumber {
+    margin: 0;
+  }
+}
+

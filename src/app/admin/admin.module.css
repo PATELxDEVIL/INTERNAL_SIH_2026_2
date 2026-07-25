@@ -130,3 +130,40 @@
   border: 1px solid #ddd;
   border-radius: 4px;
 }
+
+.grid2Col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .container {
+    padding: 2rem 1rem;
+  }
+  
+  .dashboardHeader {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+  
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .grid2Col {
+    grid-template-columns: 1fr;
+  }
+  
+  .settingsSection {
+    padding: 1.5rem;
+  }
+  
+  .tableContainer {
+    /* allows scrolling horizontally which is already there, just ensuring margin */
+    margin-bottom: 2rem;
+  }
+}
+
