@@ -464,7 +464,7 @@ export default function AdminDashboard() {
                     <h4 style={{ color: 'var(--primary-blue)', marginBottom: '0.5rem' }}>{p.title}</h4>
                     <p style={{ fontSize: '0.875rem', color: '#666', marginBottom: '1rem' }}>{p.description}</p>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <a href={p.pdfUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary-red)', fontWeight: '600' }}>View PDF</a>
+                      <a href={p.pdfUrl} download={`${p.title.replace(/\s+/g, '_')}_Statement.pdf`} style={{ color: 'var(--primary-red)', fontWeight: '600' }}>Download PDF</a>
                       <button 
                         onClick={() => toggleProblemStatus(p.id)}
                         className="btn-primary"

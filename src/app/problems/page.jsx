@@ -48,7 +48,7 @@ export default function ProblemsPage() {
               <div className={styles.problemContent}>
                 <p className={styles.problemDesc}>{problem.description}</p>
                 {problem.pdfUrl && (
-                  <a href={problem.pdfUrl} target="_blank" rel="noopener noreferrer" className={styles.pdfLink}>
+                  <a href={problem.pdfUrl} download={`${problem.title.replace(/\s+/g, '_')}_Statement.pdf`} className={styles.pdfLink}>
                     📄 View Reference PDF
                   </a>
                 )}
