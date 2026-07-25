@@ -281,7 +281,7 @@ export default function AdminDashboard() {
     }
   };
 
-  if (loading) return <div style={{ padding: '2rem' }}>Loading dashboard...</div>;
+  if (loading) return <div style={{ padding: '2rem', textAlign: 'center', color: '#888', fontSize: '1.1rem' }}>Loading dashboard...</div>;
 
   // Filter teams for modern table UI
   const filteredTeams = teams.filter(t => {
@@ -301,13 +301,18 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className={styles.container}>
+    <div className={styles.dashboardContainer}>
       <div className="container">
-        <div className={styles.dashboardHeader}>
-          <h1 className={styles.title}>Admin Dashboard</h1>
-          <button className="btn-primary" style={{ background: '#ff4d4f' }} onClick={handleLogout}>Logout</button>
+        {/* ── HEADER ── */}
+        <div className={styles.dashboardHeader} style={{ marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: '1px solid #e8e8e8' }}>
+          <div>
+            <h1 className={styles.title} style={{ marginBottom: '0.15rem' }}>Admin Dashboard</h1>
+            <p style={{ color: '#888', fontSize: '0.875rem', margin: 0 }}>Internal SIH 2026 &nbsp;&mdash;&nbsp; {totalTeams} team{totalTeams !== 1 ? 's' : ''} registered</p>
+          </div>
+          <button className="btn-primary" style={{ background: '#dc3545', padding: '0.5rem 1.25rem' }} onClick={handleLogout}>Logout</button>
         </div>
 
+        {/* ── STAT CARDS ── */}
         <div className={styles.statsGrid}>
           <div className={styles.statCard}>
             <div className={styles.statValue}>{totalTeams}</div>
@@ -318,7 +323,7 @@ export default function AdminDashboard() {
             <div className={styles.statLabel}>Total Participants</div>
           </div>
           <div className={styles.statCard}>
-            <div className={styles.statValue}>{totalMale} / {totalFemale}</div>
+            <div className={styles.statValue}>{totalMale}<span style={{ fontSize: '1.25rem', color: '#888' }}> / </span>{totalFemale}</div>
             <div className={styles.statLabel}>Male / Female</div>
           </div>
           <div className={styles.statCard}>
@@ -423,9 +428,10 @@ export default function AdminDashboard() {
           </div>
         </div>
 
+        {/* ── SETTINGS GRID ── */}
         <div className={styles.grid2Col}>
           <div className={styles.settingsSection}>
-            <h2 className={styles.settingsTitle}>Reset Team Password</h2>
+            <h2 className={styles.settingsTitle}>🔒 Reset Team Password</h2>
             <form onSubmit={handlePasswordReset}>
               <div className={styles.formGroup}>
                 <label className={styles.label}>Team ID</label>
@@ -440,96 +446,35 @@ export default function AdminDashboard() {
           </div>
 
           <div className={styles.settingsSection}>
-            <h2 className={styles.settingsTitle}>Portal Configuration</h2>
-            
-            <h3 style={{ fontSize: '1rem', color: 'var(--primary-blue)', marginBottom: '1rem' }}>Upload Brand Logos</h3>
-
-            <form onSubmit={e => handleFileUpload(e, 'logo_sih')} style={{ marginBottom: '1.5rem', borderBottom: '1px dashed #eee', paddingBottom: '1rem' }}>
-              <div className={styles.formGroup}>
-                <label className={styles.label}>SIH Logo (Official Logo)</label>
-                <input type="file" name="files" accept="image/*" className={styles.input} required />
+            <h2 className={styles.settingsTitle}>🔑 Change Admin Password</h2>
+            {changePassMsg.text && (
+              <div style={{
+                padding: '0.75rem 1rem', borderRadius: '6px', marginBottom: '1rem',
+                fontSize: '0.875rem', textAlign: 'center',
+                background: changePassMsg.type === 'error' ? '#fff5f5' : '#f6ffed',
+                color: changePassMsg.type === 'error' ? '#cc0000' : '#389e0d',
+                border: `1px solid ${changePassMsg.type === 'error' ? '#ffccc7' : '#b7eb8f'}`
+              }}>
+                {changePassMsg.text}
               </div>
-              <button type="submit" className="btn-primary" style={{ background: '#28a745' }}>Update SIH Logo</button>
-            </form>
-
-            <form onSubmit={e => handleFileUpload(e, 'logo_ksv')} style={{ marginBottom: '1.5rem', borderBottom: '1px dashed #eee', paddingBottom: '1rem' }}>
+            )}
+            <form onSubmit={handleChangeAdminPassword}>
               <div className={styles.formGroup}>
-                <label className={styles.label}>KSV Logo</label>
-                <input type="file" name="files" accept="image/*" className={styles.input} required />
-              </div>
-              <button type="submit" className="btn-primary" style={{ background: '#28a745' }}>Update KSV Logo</button>
-            </form>
-
-            <form onSubmit={e => handleFileUpload(e, 'logo_vsitr')} style={{ marginBottom: '2rem' }}>
-              <div className={styles.formGroup}>
-                <label className={styles.label}>VSITR Logo</label>
-                <input type="file" name="files" accept="image/*" className={styles.input} required />
-              </div>
-              <button type="submit" className="btn-primary" style={{ background: '#28a745' }}>Update VSITR Logo</button>
-            </form>
-
-            <h3 style={{ fontSize: '1rem', color: 'var(--primary-blue)', marginBottom: '1rem', marginTop: '2rem' }}>Hero Images</h3>
-            <form onSubmit={e => handleFileUpload(e, 'heroMedia')} style={{ marginBottom: '2rem', borderBottom: '1px dashed #eee', paddingBottom: '1rem' }}>
-              <div className={styles.formGroup}>
-                <label className={styles.label}>Upload Hero Slider Images (Select multiple)</label>
-                <input type="file" name="files" multiple accept="image/*" className={styles.input} required />
-              </div>
-              <button type="submit" className="btn-primary" style={{ background: '#28a745' }}>Update Hero Slider</button>
-            </form>
-
-            <h3 style={{ fontSize: '1rem', color: 'var(--primary-blue)', marginBottom: '1rem', marginTop: '2rem' }}>Timer Configuration</h3>
-            <form onSubmit={handleTimerConfigSubmit}>
-              <div className={styles.formGroup}>
-                <label className={styles.label}>Deadline Date & Time</label>
-                <input 
-                  type="datetime-local" 
-                  className={styles.input} 
-                  value={deadline} 
-                  onChange={e => setDeadline(e.target.value)} 
-                  required 
-                />
+                <label className={styles.label}>Current Password</label>
+                <input type="password" className={styles.input} required
+                  value={changePass.current} onChange={e => setChangePass({ ...changePass, current: e.target.value })} />
               </div>
               <div className={styles.formGroup}>
-                <label className={styles.label}>Timer Heading</label>
-                <input 
-                  type="text" 
-                  className={styles.input} 
-                  value={regHeading} 
-                  onChange={e => setRegHeading(e.target.value)} 
-                  required 
-                />
+                <label className={styles.label}>New Password</label>
+                <input type="password" className={styles.input} required minLength={6}
+                  value={changePass.newPass} onChange={e => setChangePass({ ...changePass, newPass: e.target.value })} />
               </div>
               <div className={styles.formGroup}>
-                <label className={styles.label}>Button Text</label>
-                <input 
-                  type="text" 
-                  className={styles.input} 
-                  value={regBtnText} 
-                  onChange={e => setRegBtnText(e.target.value)} 
-                  required 
-                />
+                <label className={styles.label}>Confirm New Password</label>
+                <input type="password" className={styles.input} required minLength={6}
+                  value={changePass.confirm} onChange={e => setChangePass({ ...changePass, confirm: e.target.value })} />
               </div>
-              <div className={styles.formGroup}>
-                <label className={styles.label}>Button Link</label>
-                <input 
-                  type="text" 
-                  className={styles.input} 
-                  value={regBtnLink} 
-                  onChange={e => setRegBtnLink(e.target.value)} 
-                  required 
-                />
-              </div>
-              <div className={styles.formGroup}>
-                <label className={styles.label}>Footer Text Prefix</label>
-                <input 
-                  type="text" 
-                  className={styles.input} 
-                  value={regFooterText} 
-                  onChange={e => setRegFooterText(e.target.value)} 
-                  required 
-                />
-              </div>
-              <button type="submit" className="btn-primary" style={{ background: '#28a745' }}>Update Timer Settings</button>
+              <button type="submit" className="btn-primary">Update Password</button>
             </form>
           </div>
         </div>
@@ -568,8 +513,9 @@ export default function AdminDashboard() {
           </form>
         </div>
 
+        {/* ── PROBLEM STATEMENTS ── */}
         <div className={styles.settingsSection}>
-          <h2 className={styles.settingsTitle}>Problem Statements Management</h2>
+          <h2 className={styles.settingsTitle}>📄 Problem Statements Management</h2>
           <div className={styles.grid2Col}>
             <div>
               <h3>Add New Problem Statement</h3>
