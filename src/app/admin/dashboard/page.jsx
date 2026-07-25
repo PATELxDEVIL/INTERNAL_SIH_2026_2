@@ -309,7 +309,6 @@ export default function AdminDashboard() {
             <h1 className={styles.title} style={{ marginBottom: '0.15rem' }}>Admin Dashboard</h1>
             <p style={{ color: '#888', fontSize: '0.875rem', margin: 0 }}>Internal SIH 2026 &nbsp;&mdash;&nbsp; {totalTeams} team{totalTeams !== 1 ? 's' : ''} registered</p>
           </div>
-          <button className="btn-primary" style={{ background: '#dc3545', padding: '0.5rem 1.25rem' }} onClick={handleLogout}>Logout</button>
         </div>
 
         {/* ── STAT CARDS ── */}

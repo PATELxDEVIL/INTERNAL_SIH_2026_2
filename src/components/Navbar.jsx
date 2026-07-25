@@ -10,6 +10,9 @@ export default function Navbar() {
   const [configLoaded, setConfigLoaded] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  // Hide navbar entirely on admin pages — admin has its own sidebar
+  if (pathname.startsWith('/admin')) return null;
+
   useEffect(() => {
     fetch('/api/admin/config')
       .then(res => res.json())
