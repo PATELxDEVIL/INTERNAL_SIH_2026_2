@@ -1,7 +1,7 @@
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 
-// If no SMTP_HOST is set, just log the email (development mock)
-const MOCK_EMAIL = !process.env.SMTP_HOST;
+// Use Resend if RESEND_API_KEY is set, otherwise log to console (dev mock)
+const MOCK_EMAIL = !process.env.RESEND_API_KEY;
 
 export async function sendEmail({ to, subject, text, html }) {
   if (MOCK_EMAIL) {
@@ -13,21 +13,20 @@ export async function sendEmail({ to, subject, text, html }) {
     return true;
   }
 
-  const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: Number(process.env.SMTP_PORT) || 587,
-    secure: false, // true for 465, false for 587
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
-    },
-  });
+  const resend = new Resend(process.env.RESEND_API_KEY);
 
-  return transporter.sendMail({
-    from: `"Internal SIH 2026" <${process.env.SMTP_USER}>`,
+  const { data, error } = await resend.emails.send({
+    from: 'Internal SIH 2026 <onboarding@resend.dev>',
     to,
     subject,
     text,
     html,
   });
+
+  if (error) {
+    console.error('Resend email error:', error);
+    throw new Error(error.message);
+  }
+
+  return data;
 }
