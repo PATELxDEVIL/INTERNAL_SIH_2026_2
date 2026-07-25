@@ -1,36 +1,46 @@
-import { Resend } from 'resend';
+import nodemailer from 'nodemailer';
 
-const MOCK_EMAIL = !process.env.RESEND_API_KEY;
+// Creates Gmail SMTP transporter using internalsih.vsitr@gmail.com
+function getTransporter() {
+  if (!process.env.GMAIL_APP_PASSWORD) {
+    return null; // Will fall back to mock mode
+  }
+  return nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'internalsih.vsitr@gmail.com',
+      pass: process.env.GMAIL_APP_PASSWORD, // 16-char App Password from Google
+    },
+  });
+}
 
 export async function sendEmail({ to, subject, text, html }) {
-  if (MOCK_EMAIL) {
-    console.log(`\n--- Mock Email ---`);
+  const transporter = getTransporter();
+
+  // Mock mode: log to console if Gmail not configured
+  if (!transporter) {
+    console.log(`\n--- Mock Email (Gmail not configured) ---`);
+    console.log(`From: internalsih.vsitr@gmail.com`);
     console.log(`To: ${to}`);
     console.log(`Subject: ${subject}`);
     console.log(`Body: ${text}`);
-    console.log(`-----------------\n`);
+    console.log(`-----------------------------------------\n`);
     return true;
   }
 
-  const resend = new Resend(process.env.RESEND_API_KEY);
-
-  const { data, error } = await resend.emails.send({
-    from: 'Internal SIH 2026 <internalsih.vsitr@gmail.com>',
+  const info = await transporter.sendMail({
+    from: '"Internal SIH 2026" <internalsih.vsitr@gmail.com>',
     to,
     subject,
     text,
     html,
   });
 
-  if (error) {
-    console.error('Resend email error:', error);
-    throw new Error(error.message);
-  }
-
-  return data;
+  console.log('Email sent:', info.messageId);
+  return info;
 }
 
-// Builds a beautiful HTML registration confirmation email
+// Builds a beautiful HTML registration confirmation email for Team Leader
 export function buildRegistrationEmail({ teamName, teamId, password, leaderName }) {
   return `<!DOCTYPE html>
 <html>
@@ -49,7 +59,7 @@ export function buildRegistrationEmail({ teamName, teamId, password, leaderName 
           <tr>
             <td style="background:linear-gradient(135deg,#c0392b 0%,#1a3a6b 100%);padding:36px 40px;text-align:center;">
               <h1 style="margin:0;color:#ffffff;font-size:26px;font-weight:700;letter-spacing:1px;">🏆 Internal SIH 2026</h1>
-              <p style="margin:8px 0 0;color:rgba(255,255,255,0.85);font-size:14px;">Vidush Somany Institute of Technology & Research</p>
+              <p style="margin:8px 0 0;color:rgba(255,255,255,0.85);font-size:14px;">Vidush Somany Institute of Technology &amp; Research</p>
             </td>
           </tr>
 
@@ -75,7 +85,12 @@ export function buildRegistrationEmail({ teamName, teamId, password, leaderName 
                 </tr>
               </table>
 
-              <p style="color:#555;font-size:14px;margin:0 0 8px;"><strong>Login URL:</strong> <a href="https://internal-sih-2026-2.vercel.app/team/login" style="color:#1a3a6b;">https://internal-sih-2026-2.vercel.app/team/login</a></p>
+              <p style="color:#555;font-size:14px;margin:0 0 8px;">
+                <strong>Login URL:</strong> 
+                <a href="https://internal-sih-2026-2.vercel.app/team/login" style="color:#1a3a6b;">
+                  https://internal-sih-2026-2.vercel.app/team/login
+                </a>
+              </p>
 
               <!-- Divider -->
               <hr style="border:none;border-top:1px solid #eee;margin:28px 0;">
@@ -107,7 +122,7 @@ export function buildRegistrationEmail({ teamName, teamId, password, leaderName 
 </html>`;
 }
 
-// Member notification email (plain)
+// Member notification email
 export function buildMemberEmail({ memberName, teamName, leaderName }) {
   return `<!DOCTYPE html>
 <html>
@@ -120,7 +135,7 @@ export function buildMemberEmail({ memberName, teamName, leaderName }) {
           <tr>
             <td style="background:linear-gradient(135deg,#c0392b 0%,#1a3a6b 100%);padding:36px 40px;text-align:center;">
               <h1 style="margin:0;color:#ffffff;font-size:26px;font-weight:700;">🏆 Internal SIH 2026</h1>
-              <p style="margin:8px 0 0;color:rgba(255,255,255,0.85);font-size:14px;">Vidush Somany Institute of Technology & Research</p>
+              <p style="margin:8px 0 0;color:rgba(255,255,255,0.85);font-size:14px;">Vidush Somany Institute of Technology &amp; Research</p>
             </td>
           </tr>
           <tr>
@@ -128,10 +143,11 @@ export function buildMemberEmail({ memberName, teamName, leaderName }) {
               <h2 style="margin:0 0 16px;color:#1a3a6b;">You're Registered!</h2>
               <p style="color:#555;font-size:15px;line-height:1.7;">Hello <strong>${memberName}</strong>,</p>
               <p style="color:#555;font-size:15px;line-height:1.7;">
-                You have been successfully registered for <strong>Internal Smart India Hackathon 2026</strong> as a member of team <strong style="color:#c0392b;">${teamName}</strong>, led by <strong>${leaderName}</strong>.
+                You have been successfully registered for <strong>Internal Smart India Hackathon 2026</strong> as a member of team 
+                <strong style="color:#c0392b;">${teamName}</strong>, led by <strong>${leaderName}</strong>.
               </p>
               <p style="color:#555;font-size:15px;line-height:1.7;">
-                Your Team Leader will log into the portal to submit Mentor Details and select a Problem Statement. Stay in touch with your team.
+                Your Team Leader will log into the portal to submit Mentor Details and select a Problem Statement. Stay in touch with your team!
               </p>
               <hr style="border:none;border-top:1px solid #eee;margin:24px 0;">
               <h3 style="margin:0 0 12px;color:#1a3a6b;font-size:16px;">📋 Important Rules</h3>
