@@ -167,3 +167,175 @@
   }
 }
 
+/* ── Modern Table UI ── */
+.modernTableContainer {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  margin-bottom: 3rem;
+  font-family: inherit;
+}
+
+.modernTableHeader {
+  background-color: #2b4492; /* Dark blue from screenshot */
+  color: white;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modernTableHeaderLeft {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.modernHeaderIcon {
+  background: rgba(255,255,255,0.15);
+  padding: 0.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modernTitle {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.modernSubtitle {
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.7);
+  margin: 0;
+}
+
+.modernTableHeaderRight {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.modernSearchInput {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: white;
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  outline: none;
+  width: 250px;
+}
+.modernSearchInput::placeholder {
+  color: rgba(255,255,255,0.6);
+}
+
+.modernStatusSelect {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: white;
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  outline: none;
+  cursor: pointer;
+}
+.modernStatusSelect option {
+  background: white;
+  color: #333;
+}
+
+.modernTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.modernTable thead tr {
+  background-color: #fcfcfc;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.modernTable th {
+  padding: 1rem 1.5rem;
+  text-align: left;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: #888;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.modernTable tbody tr {
+  border-bottom: 1px solid #f0f0f0;
+  transition: background-color 0.2s;
+}
+
+.modernTable tbody tr:hover {
+  background-color: #f9f9f9;
+}
+
+.modernTable td {
+  padding: 1rem 1.5rem;
+  vertical-align: middle;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.modernIdPill {
+  background-color: #f5f5f5;
+  color: #666;
+  padding: 0.35rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-family: monospace;
+}
+
+.modernTeamName {
+  color: #2b4492;
+  font-weight: 600;
+}
+
+.modernStatusPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.statusPending {
+  background-color: #fffbe6;
+  color: #d48806;
+}
+.statusApproved {
+  background-color: #f6ffed;
+  color: #389e0d;
+}
+.statusRejected {
+  background-color: #fff1f0;
+  color: #cf1322;
+}
+.statusReview {
+  background-color: #e6f7ff;
+  color: #096dd9;
+}
+
+.modernActionLink {
+  color: #2b4492;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 0.85rem;
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+.modernActionLink:hover {
+  text-decoration: underline;
+}
+

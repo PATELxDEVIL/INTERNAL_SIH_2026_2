@@ -15,6 +15,10 @@ export default function AdminDashboard() {
   const [regFooterText, setRegFooterText] = useState('Registration closes on');
   const [loading, setLoading] = useState(true);
 
+  // New states for modern table UI
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('All Statuses');
+
   useEffect(() => {
     const session = localStorage.getItem('adminSession');
     if (!session) {
@@ -256,6 +260,23 @@ export default function AdminDashboard() {
 
   if (loading) return <div style={{ padding: '2rem' }}>Loading dashboard...</div>;
 
+  // Filter teams for modern table UI
+  const filteredTeams = teams.filter(t => {
+    const matchesSearch = t.teamName.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          t.teamId.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus = statusFilter === 'All Statuses' || t.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
+
+  const uniqueStatuses = ['All Statuses', ...Array.from(new Set(teams.map(t => t.status)))];
+
+  const getStatusClass = (status) => {
+    if (status.includes('Approve') || status.includes('Complete')) return styles.statusApproved;
+    if (status.includes('Reject')) return styles.statusRejected;
+    if (status.includes('Review')) return styles.statusReview;
+    return styles.statusPending;
+  };
+
   return (
     <div className={styles.container}>
       <div className="container">
@@ -283,38 +304,87 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        <div className={styles.tableContainer}>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th>Registration ID</th>
-                <th>Team Name</th>
-                <th>Leader Name</th>
-                <th>Leader Email</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {teams.length === 0 && (
+        <div className={styles.modernTableContainer}>
+          <div className={styles.modernTableHeader}>
+            <div className={styles.modernTableHeaderLeft}>
+              <div className={styles.modernHeaderIcon}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+              </div>
+              <div>
+                <h2 className={styles.modernTitle}>Team Registrations</h2>
+                <p className={styles.modernSubtitle}>{filteredTeams.length} of {teams.length} teams</p>
+              </div>
+            </div>
+            <div className={styles.modernTableHeaderRight}>
+              <div style={{ position: 'relative' }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }}>
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input 
+                  type="text" 
+                  placeholder="Search teams..." 
+                  className={styles.modernSearchInput}
+                  style={{ paddingLeft: '32px' }}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+              <select 
+                className={styles.modernStatusSelect}
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+              >
+                {uniqueStatuses.map(s => <option key={s} value={s}>{s}</option>)}
+              </select>
+            </div>
+          </div>
+
+          <div style={{ overflowX: 'auto' }}>
+            <table className={styles.modernTable}>
+              <thead>
                 <tr>
-                  <td colSpan="5" style={{ textAlign: 'center', padding: '2rem' }}>No teams registered yet.</td>
+                  <th>Registration ID</th>
+                  <th>Team Name</th>
+                  <th>Leader Name</th>
+                  <th>Leader Email</th>
+                  <th>Status</th>
+                  <th>Actions</th>
                 </tr>
-              )}
-              {teams.map(team => (
-                <tr key={team.teamId}>
-                  <td>{team.teamId}</td>
-                  <td><strong>{team.teamName}</strong></td>
-                  <td>{team.leader.name}</td>
-                  <td>{team.leader.email}</td>
-                  <td>
-                    <span className={`${styles.badge} ${team.mentor ? styles.badgeSuccess : styles.badgeWarning}`}>
-                      {team.status}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {filteredTeams.length === 0 && (
+                  <tr>
+                    <td colSpan="6" style={{ textAlign: 'center', padding: '3rem', color: '#888' }}>No teams found matching your filters.</td>
+                  </tr>
+                )}
+                {filteredTeams.map(team => (
+                  <tr key={team.teamId}>
+                    <td><span className={styles.modernIdPill}>{team.teamId}</span></td>
+                    <td><span className={styles.modernTeamName}>{team.teamName}</span></td>
+                    <td>{team.leader?.name || 'N/A'}</td>
+                    <td>{team.leader?.email || 'N/A'}</td>
+                    <td>
+                      <span className={`${styles.modernStatusPill} ${getStatusClass(team.status)}`}>
+                        {team.status}
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.5, marginLeft: '2px' }}>
+                          <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                      </span>
+                    </td>
+                    <td>
+                      <button className={styles.modernActionLink} onClick={() => alert('View details feature coming soon!')}>View</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
 
         <div className={styles.grid2Col}>
