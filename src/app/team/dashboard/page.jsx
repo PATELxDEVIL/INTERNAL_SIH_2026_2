@@ -261,29 +261,52 @@ export default function TeamDashboard() {
           <h2 className={styles.sectionTitle}>3. Manage Team Members</h2>
           <p style={{ fontSize: '0.9rem', color: '#666', marginBottom: '1rem' }}>The Team Leader cannot be changed. You can edit the details of other members.</p>
           
-          <div style={{ border: '1px solid #eee', borderRadius: '4px', overflow: 'hidden' }}>
-            {/* Leader */}
-            <div style={{ padding: '1rem', background: '#fafafa', borderBottom: '1px solid #eee' }}>
-              <strong style={{ color: 'var(--primary-blue)' }}>👑 {team.leader.name} (Leader)</strong>
-              <div style={{ fontSize: '0.85rem', color: '#555', marginTop: '0.25rem' }}>{team.leader.email} | {team.leader.phone}</div>
-            </div>
-            
-            {/* Members */}
-            {team.members.map((m, i) => (
-              <div key={m.id} style={{ padding: '1rem', borderBottom: i === team.members.length - 1 ? 'none' : '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <strong>{m.name}</strong>
-                  <div style={{ fontSize: '0.85rem', color: '#555', marginTop: '0.25rem' }}>{m.email} | {m.phone} | {m.enrollment}</div>
-                </div>
-                <button 
-                  onClick={() => setEditingMember(m)}
-                  className={styles.btnSecondary}
-                  style={{ padding: '0.25rem 0.75rem', fontSize: '0.85rem' }}
-                >
-                  Edit
-                </button>
-              </div>
-            ))}
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem', border: '1px solid #eee' }}>
+              <thead>
+                <tr style={{ background: '#f5f5f5', textAlign: 'left', borderBottom: '2px solid #ddd' }}>
+                  <th style={{ padding: '0.75rem', borderRight: '1px solid #eee' }}>Role</th>
+                  <th style={{ padding: '0.75rem', borderRight: '1px solid #eee' }}>Name</th>
+                  <th style={{ padding: '0.75rem', borderRight: '1px solid #eee' }}>Email</th>
+                  <th style={{ padding: '0.75rem', borderRight: '1px solid #eee' }}>Phone</th>
+                  <th style={{ padding: '0.75rem', borderRight: '1px solid #eee' }}>Enrollment</th>
+                  <th style={{ padding: '0.75rem', borderRight: '1px solid #eee' }}>Dept / Sem</th>
+                  <th style={{ padding: '0.75rem' }}>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {/* Leader Row */}
+                <tr style={{ borderBottom: '1px solid #eee', background: '#fafafa' }}>
+                  <td style={{ padding: '0.75rem', fontWeight: 'bold', color: 'var(--primary-blue)', borderRight: '1px solid #eee' }}>👑 Team Leader</td>
+                  <td style={{ padding: '0.75rem', fontWeight: 'bold', borderRight: '1px solid #eee' }}>{team.leader.name}</td>
+                  <td style={{ padding: '0.75rem', borderRight: '1px solid #eee' }}>{team.leader.email}</td>
+                  <td style={{ padding: '0.75rem', borderRight: '1px solid #eee' }}>{team.leader.phone}</td>
+                  <td style={{ padding: '0.75rem', borderRight: '1px solid #eee' }}>{team.leader.enrollment}</td>
+                  <td style={{ padding: '0.75rem', borderRight: '1px solid #eee' }}>{team.leader.department} <br/> <small>Sem {team.leader.semester}</small></td>
+                  <td style={{ padding: '0.75rem', color: '#999', fontStyle: 'italic' }}>Cannot Edit</td>
+                </tr>
+                {/* Member Rows */}
+                {team.members.map((m, i) => (
+                  <tr key={m.id} style={{ borderBottom: '1px solid #eee' }}>
+                    <td style={{ padding: '0.75rem', borderRight: '1px solid #eee' }}>Team Member</td>
+                    <td style={{ padding: '0.75rem', borderRight: '1px solid #eee' }}>{m.name}</td>
+                    <td style={{ padding: '0.75rem', borderRight: '1px solid #eee' }}>{m.email}</td>
+                    <td style={{ padding: '0.75rem', borderRight: '1px solid #eee' }}>{m.phone}</td>
+                    <td style={{ padding: '0.75rem', borderRight: '1px solid #eee' }}>{m.enrollment}</td>
+                    <td style={{ padding: '0.75rem', borderRight: '1px solid #eee' }}>{m.department} <br/> <small>Sem {m.semester}</small></td>
+                    <td style={{ padding: '0.75rem' }}>
+                      <button 
+                        onClick={() => setEditingMember(m)}
+                        className={styles.btnSecondary}
+                        style={{ padding: '0.25rem 0.5rem', fontSize: '0.8rem' }}
+                      >
+                        Edit
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
 
