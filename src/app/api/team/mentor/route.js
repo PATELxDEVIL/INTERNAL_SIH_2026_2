@@ -1,28 +1,22 @@
 import { NextResponse } from 'next/server';
-import { readDB, writeDB } from '@/lib/db';
+import { saveMentor } from '@/lib/db';
 
 export async function POST(req) {
   try {
     const { teamId, mentor } = await req.json();
-    const db = await readDB();
 
-    const teamIndex = db.teams.findIndex(t => t.teamId === teamId);
-    if (teamIndex === -1) {
-      return NextResponse.json({ error: "Team not found" }, { status: 404 });
+    if (!teamId || !mentor) {
+      return NextResponse.json({ error: "Team ID and mentor details are required" }, { status: 400 });
     }
 
-    if (db.teams[teamIndex].mentor) {
-      return NextResponse.json({ error: "Mentor details already submitted" }, { status: 400 });
+    if (!mentor.name || !mentor.email) {
+      return NextResponse.json({ error: "Mentor name and email are required" }, { status: 400 });
     }
 
-    db.teams[teamIndex].mentor = mentor;
-    db.teams[teamIndex].status = "Registration Completed";
-
-    await writeDB(db);
-
-    return NextResponse.json({ success: true, team: db.teams[teamIndex] }, { status: 200 });
+    await saveMentor(teamId, mentor);
+    return NextResponse.json({ success: true, message: "Mentor details saved successfully" });
   } catch (error) {
-    console.error("Mentor Update Error", error);
+    console.error("Mentor Save Error", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

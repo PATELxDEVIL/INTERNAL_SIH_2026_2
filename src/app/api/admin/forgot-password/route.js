@@ -1,69 +1,59 @@
 import { NextResponse } from 'next/server';
-import { readDB, writeDB } from '@/lib/db';
+import { saveOtp, validateOtp, updateAdminPassword } from '@/lib/db';
 import { sendEmail } from '@/lib/email';
+import bcrypt from 'bcryptjs';
 
-// In-memory OTP store (resets on server restart — fine for serverless)
-// For production persistence, store OTPs in the DB
-const otpStore = new Map();
+function generateOtp() {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
 
 export async function POST(req) {
   try {
-    const { action, otp, newPassword } = await req.json();
+    const body = await req.json();
+    const { action } = body;
 
-    // --- Step 1: Request OTP ---
-    if (action === 'request_otp') {
-      const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
-      const expiry = Date.now() + 10 * 60 * 1000; // 10 minutes
-      otpStore.set('admin_reset', { otp: generatedOtp, expiry });
+    if (action === 'send_otp') {
+      const otp = generateOtp();
+      const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString(); // 10 minutes
+      await saveOtp('admin', otp, expiresAt);
 
-      await sendEmail({
-        to: 'internalsih.vsitr@gmail.com',
-        subject: 'Admin Password Reset OTP — Internal SIH 2026',
-        text: `Your OTP to reset the admin password is: ${generatedOtp}\n\nThis OTP is valid for 10 minutes.\n\nIf you did not request this, please ignore this email.`,
-        html: `
-          <div style="font-family: sans-serif; max-width: 480px; margin: auto; padding: 2rem; border: 1px solid #eee; border-radius: 8px;">
-            <h2 style="color: #003580;">Internal SIH 2026 — Admin Password Reset</h2>
-            <p>Use the OTP below to reset your admin password:</p>
-            <div style="font-size: 2.5rem; font-weight: 700; letter-spacing: 0.5rem; color: #cc0000; text-align: center; padding: 1rem; background: #fff5f5; border-radius: 8px; margin: 1.5rem 0;">
-              ${generatedOtp}
-            </div>
-            <p style="color: #666; font-size: 0.875rem;">This OTP is valid for <strong>10 minutes</strong>. If you did not request this, please ignore this email.</p>
-          </div>
-        `
-      });
+      try {
+        await sendEmail({
+          to: 'internalsih.vsitr@gmail.com',
+          subject: 'Admin Password Reset OTP - Internal SIH 2026',
+          text: `Your OTP for admin password reset is: ${otp}\n\nThis OTP is valid for 10 minutes. Do not share it with anyone.`
+        });
+      } catch (emailErr) {
+        console.error("OTP email failed:", emailErr);
+        return NextResponse.json({ error: "Failed to send OTP email. Please try again." }, { status: 500 });
+      }
 
-      return NextResponse.json({ success: true, message: 'OTP sent to admin email.' });
+      return NextResponse.json({ success: true, message: "OTP sent to admin email" });
     }
 
-    // --- Step 2: Verify OTP & Reset Password ---
-    if (action === 'verify_otp') {
-      const stored = otpStore.get('admin_reset');
-      if (!stored) {
-        return NextResponse.json({ error: 'No OTP requested. Please request a new OTP.' }, { status: 400 });
+    if (action === 'reset_password') {
+      const { otp, newPassword } = body;
+      if (!otp || !newPassword) {
+        return NextResponse.json({ error: "OTP and new password are required" }, { status: 400 });
       }
-      if (Date.now() > stored.expiry) {
-        otpStore.delete('admin_reset');
-        return NextResponse.json({ error: 'OTP has expired. Please request a new one.' }, { status: 400 });
-      }
-      if (stored.otp !== otp) {
-        return NextResponse.json({ error: 'Invalid OTP. Please try again.' }, { status: 400 });
+      if (newPassword.length < 6) {
+        return NextResponse.json({ error: "Password must be at least 6 characters" }, { status: 400 });
       }
 
-      if (!newPassword || newPassword.length < 6) {
-        return NextResponse.json({ error: 'Password must be at least 6 characters.' }, { status: 400 });
+      const isValid = await validateOtp('admin', otp);
+      if (!isValid) {
+        return NextResponse.json({ error: "Invalid or expired OTP" }, { status: 400 });
       }
 
-      const db = await readDB();
-      db.admin.password = newPassword;
-      await writeDB(db);
-      otpStore.delete('admin_reset');
+      const hashed = await bcrypt.hash(newPassword, 10);
+      await updateAdminPassword(hashed);
 
-      return NextResponse.json({ success: true, message: 'Password reset successfully!' });
+      return NextResponse.json({ success: true, message: "Password reset successfully" });
     }
 
-    return NextResponse.json({ error: 'Invalid action.' }, { status: 400 });
+    return NextResponse.json({ error: "Unknown action" }, { status: 400 });
   } catch (error) {
-    console.error('Forgot password error:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    console.error("Forgot Password Error", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

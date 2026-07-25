@@ -1,55 +1,45 @@
 import { NextResponse } from 'next/server';
-import { readDB, writeDB } from '@/lib/db';
+import { getProblems, createProblem, toggleProblemLive } from '@/lib/db';
+import { v4 as uuidv4 } from 'uuid';
 import fs from 'fs/promises';
 import path from 'path';
-import { v4 as uuidv4 } from 'uuid';
 
 export async function GET() {
   try {
-    const db = await readDB();
-    return NextResponse.json({ success: true, problems: db.problemStatements || [] }, { status: 200 });
+    const problems = await getProblems();
+    return NextResponse.json({ success: true, problems });
   } catch (error) {
+    console.error("Problems GET Error", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
 
 export async function POST(req) {
   try {
-    const { title, description, pdfFile } = await req.json(); // pdfFile = { name, data: base64string }
-    const db = await readDB();
-    const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
-    
-    await fs.mkdir(uploadsDir, { recursive: true });
+    const body = await req.json();
+    const { title, description, pdfFile } = body;
+
+    if (!title) {
+      return NextResponse.json({ error: "Title is required" }, { status: 400 });
+    }
 
     let pdfUrl = null;
     if (pdfFile && pdfFile.data) {
+      const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
+      await fs.mkdir(uploadsDir, { recursive: true });
       const matches = pdfFile.data.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
-      if (matches && matches.length === 3) {
-        const ext = matches[1].split('/')[1] || 'pdf';
+      if (matches) {
         const buffer = Buffer.from(matches[2], 'base64');
-        const filename = `${uuidv4()}.${ext}`;
-        const filePath = path.join(uploadsDir, filename);
-        await fs.writeFile(filePath, buffer);
+        const filename = `${uuidv4()}.pdf`;
+        await fs.writeFile(path.join(uploadsDir, filename), buffer);
         pdfUrl = `/uploads/${filename}`;
       }
     }
 
-    const newProblem = {
-      id: `PS-${uuidv4().substring(0, 8)}`,
-      title,
-      description,
-      pdfUrl,
-      isLive: false,
-      createdAt: new Date().toISOString()
-    };
-
-    if (!db.problemStatements) db.problemStatements = [];
-    db.problemStatements.push(newProblem);
-    await writeDB(db);
-
-    return NextResponse.json({ success: true, problem: newProblem }, { status: 200 });
+    const id = await createProblem({ title, description: description || '', pdfUrl });
+    return NextResponse.json({ success: true, id });
   } catch (error) {
-    console.error("Problem Creation Error", error);
+    console.error("Problems POST Error", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
@@ -57,21 +47,13 @@ export async function POST(req) {
 export async function PUT(req) {
   try {
     const { id, action } = await req.json();
-    const db = await readDB();
-    
-    if (!db.problemStatements) return NextResponse.json({ error: "Not found" }, { status: 404 });
-    
-    const index = db.problemStatements.findIndex(p => p.id === id);
-    if (index === -1) return NextResponse.json({ error: "Problem not found" }, { status: 404 });
-
-    if (action === 'toggle_live') {
-      db.problemStatements[index].isLive = !db.problemStatements[index].isLive;
-      await writeDB(db);
-      return NextResponse.json({ success: true, problem: db.problemStatements[index] }, { status: 200 });
+    if (action === 'toggle_live' && id) {
+      await toggleProblemLive(id);
+      return NextResponse.json({ success: true });
     }
-    
-    return NextResponse.json({ error: "Invalid action" }, { status: 400 });
+    return NextResponse.json({ error: "Unknown action" }, { status: 400 });
   } catch (error) {
+    console.error("Problems PUT Error", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

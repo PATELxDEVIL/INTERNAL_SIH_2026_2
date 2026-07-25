@@ -1,18 +1,15 @@
 import { NextResponse } from 'next/server';
-import { readDB, writeDB } from '@/lib/db';
+import { isTeamNameTaken, isEnrollmentTaken, createTeam, getNextTeamId } from '@/lib/db';
 import { sendEmail } from '@/lib/email';
 import bcrypt from 'bcryptjs';
 
 const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test((email || '').trim());
 const isValidPhone = (phone) => /^[6-9]\d{9}$/.test((phone || '').trim());
 
-
 const generatePassword = () => {
   const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
   let password = "";
-  for (let i = 0; i < 6; i++) {
-    password += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
+  for (let i = 0; i < 8; i++) password += chars.charAt(Math.floor(Math.random() * chars.length));
   return password;
 };
 
@@ -21,19 +18,20 @@ export async function POST(req) {
     const data = await req.json();
     const { teamName, leader, members } = data;
 
-    const db = await readDB();
-
-    // Validations
-    if (db.teams.some(t => t.teamName.toLowerCase() === teamName.toLowerCase())) {
-      return NextResponse.json({ error: "Team Name Already Exists" }, { status: 400 });
+    if (!teamName || !leader || !members) {
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
+    // Team name validations
     if (teamName.toLowerCase().includes('vsitr') || teamName.toLowerCase().includes('vidush somany')) {
       return NextResponse.json({ error: "Team name must not include the institute's name" }, { status: 400 });
     }
+    if (await isTeamNameTaken(teamName)) {
+      return NextResponse.json({ error: "Team Name Already Exists" }, { status: 400 });
+    }
 
     const allMembers = [leader, ...members];
-    
+
     if (allMembers.length !== 6) {
       return NextResponse.json({ error: "Team must consist of exactly 6 members" }, { status: 400 });
     }
@@ -46,49 +44,36 @@ export async function POST(req) {
         return NextResponse.json({ error: `${label}: "${m.email}" is not a valid email address.` }, { status: 400 });
       }
       if (!isValidPhone(m.phone)) {
-        return NextResponse.json({ error: `${label}: Mobile number must be exactly 10 digits and start with 6–9. Got: "${m.phone}"` }, { status: 400 });
+        return NextResponse.json({ error: `${label}: Mobile number must be exactly 10 digits and start with 6–9.` }, { status: 400 });
       }
     }
 
-    if (!allMembers.some(m => m.gender.toLowerCase() === 'female')) {
+    if (!allMembers.some(m => m.gender?.toLowerCase() === 'female')) {
       return NextResponse.json({ error: "Team must include at least 1 female participant" }, { status: 400 });
     }
 
-    const enrollments = allMembers.map(m => m.enrollment);
+    // Duplicate enrollment check within team
+    const enrollments = allMembers.map(m => (m.enrollment || '').trim());
     if (new Set(enrollments).size !== enrollments.length) {
       return NextResponse.json({ error: "Duplicate enrollment numbers within team" }, { status: 400 });
     }
 
-    const allExistingEnrollments = db.teams.flatMap(t => [t.leader.enrollment, ...t.members.map(m => m.enrollment)]);
+    // Check against DB for existing enrollments
     for (const enr of enrollments) {
-      if (allExistingEnrollments.includes(enr)) {
-        return NextResponse.json({ error: `Participant with enrollment ${enr} already registered` }, { status: 400 });
+      if (await isEnrollmentTaken(enr)) {
+        return NextResponse.json({ error: `Participant with enrollment "${enr}" is already registered` }, { status: 400 });
       }
     }
 
-    // Generate Team ID
-    const nextId = db.teams.length + 1;
-    const teamId = `SIH2026-${String(nextId).padStart(3, '0')}`;
-
-    // Generate Password
+    // Generate Team ID & Password
+    const teamId = await getNextTeamId();
     const plainPassword = generatePassword();
     const hashedPassword = await bcrypt.hash(plainPassword, 10);
 
-    const newTeam = {
-      teamId,
-      teamName,
-      password: hashedPassword,
-      leader,
-      members,
-      mentor: null,
-      status: 'Pending Mentor Details',
-      createdAt: new Date().toISOString()
-    };
+    // Save to relational tables
+    await createTeam({ teamId, teamName, password: hashedPassword, leader, members });
 
-    db.teams.push(newTeam);
-    await writeDB(db);
-
-    // Send Email to Leader
+    // Send emails (non-blocking)
     const rulesText = `Internal SIH 2026 Rules:
 1. Team must have 6 members and 1 female.
 2. Complete Mentor Details for final confirmation.
@@ -99,33 +84,19 @@ export async function POST(req) {
       await sendEmail({
         to: leader.email,
         subject: `Registration Successful - ${teamName} - Internal SIH 2026`,
-        text: `Congratulations! Your team ${teamName} has been successfully registered.
-
-Your Team Registration ID: ${teamId}
-Your Team Password: ${plainPassword}
-
-Please use these credentials to log in to the Team Portal and submit your Mentor Details.
-
-${rulesText}`
+        text: `Congratulations! Your team ${teamName} has been successfully registered.\n\nTeam ID: ${teamId}\nPassword: ${plainPassword}\n\nLogin at /team/login to submit Mentor Details.\n\n${rulesText}`
       });
-
-      // Send Email to Members
       for (const member of members) {
         if (member.email) {
           await sendEmail({
             to: member.email,
-            subject: `You have been registered for Internal SIH 2026`,
-            text: `Hello ${member.name},
-
-You have been registered for Internal SIH 2026 as part of the team "${teamName}" led by ${leader.name}.
-
-${rulesText}`
+            subject: `Registered for Internal SIH 2026 - Team ${teamName}`,
+            text: `Hello ${member.name},\n\nYou have been registered for Internal SIH 2026 in team "${teamName}" led by ${leader.name}.\n\n${rulesText}`
           });
         }
       }
     } catch (emailError) {
-      console.error("Non-fatal: Failed to send emails, but team was registered.", emailError);
-      // We do not throw here, so the registration still completes successfully.
+      console.error("Non-fatal: Email failed, but team was registered.", emailError);
     }
 
     return NextResponse.json({ success: true, teamId }, { status: 200 });
