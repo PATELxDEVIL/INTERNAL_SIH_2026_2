@@ -203,6 +203,11 @@ export async function toggleProblemLive(id) {
   await sql`UPDATE problem_statements SET is_live = NOT is_live WHERE id = ${id}`;
 }
 
+export async function deleteProblem(id) {
+  const sql = getSql();
+  await sql`DELETE FROM problem_statements WHERE id = ${id}`;
+}
+
 // ─── OTPs ─────────────────────────────────────────────────────────────────────
 
 export async function saveOtp(identifier, otp, expiresAt) {

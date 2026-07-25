@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getProblems, createProblem, toggleProblemLive } from '@/lib/db';
+import { getProblems, createProblem, toggleProblemLive, deleteProblem } from '@/lib/db';
 
 export async function GET() {
   try {
@@ -40,6 +40,10 @@ export async function PUT(req) {
     const { id, action } = await req.json();
     if (action === 'toggle_live' && id) {
       await toggleProblemLive(id);
+      return NextResponse.json({ success: true });
+    }
+    if (action === 'delete' && id) {
+      await deleteProblem(id);
       return NextResponse.json({ success: true });
     }
     return NextResponse.json({ error: "Unknown action" }, { status: 400 });

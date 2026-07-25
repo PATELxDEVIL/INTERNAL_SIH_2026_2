@@ -201,6 +201,24 @@ export default function AdminDashboard() {
     }
   };
 
+  const deleteProblem = async (id) => {
+    if (!confirm("Are you sure you want to delete this problem statement? This action cannot be undone.")) return;
+    try {
+      const res = await fetch('/api/admin/problems', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, action: 'delete' })
+      });
+      if (res.ok) {
+        fetchTeams(); // Re-fetch problems
+      } else {
+        alert("Failed to delete problem statement");
+      }
+    } catch (err) {
+      alert("Error deleting problem");
+    }
+  };
+
   const handleTimerConfigSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -465,13 +483,22 @@ export default function AdminDashboard() {
                     <p style={{ fontSize: '0.875rem', color: '#666', marginBottom: '1rem' }}>{p.description}</p>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <a href={p.pdfUrl} download={`${p.title.replace(/\s+/g, '_')}_Statement.pdf`} style={{ color: 'var(--primary-red)', fontWeight: '600' }}>Download PDF</a>
-                      <button 
-                        onClick={() => toggleProblemStatus(p.id)}
-                        className="btn-primary"
-                        style={{ padding: '0.25rem 0.5rem', background: p.isLive ? '#ff4d4f' : '#28a745' }}
-                      >
-                        {p.isLive ? 'Take Offline' : 'Make Live'}
-                      </button>
+                      <div style={{ display: 'flex', gap: '0.5rem' }}>
+                        <button 
+                          onClick={() => toggleProblemStatus(p.id)}
+                          className="btn-primary"
+                          style={{ padding: '0.25rem 0.5rem', background: p.isLive ? '#ff4d4f' : '#28a745', fontSize: '0.8rem' }}
+                        >
+                          {p.isLive ? 'Take Offline' : 'Make Live'}
+                        </button>
+                        <button 
+                          onClick={() => deleteProblem(p.id)}
+                          className="btn-primary"
+                          style={{ padding: '0.25rem 0.5rem', background: '#333', fontSize: '0.8rem' }}
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))}
