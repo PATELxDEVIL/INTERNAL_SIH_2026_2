@@ -172,10 +172,8 @@ Please Note: The Team Leader must regularly check their email inbox for further 
         <select className={styles.select} value={data.department} onChange={e => onChange('department', e.target.value)}>
           <option value="">Select</option>
           <option value="Computer Engineering">Computer Engineering</option>
+          <option value="Computer Science and Engineering">Computer Science and Engineering</option>
           <option value="Information Technology">Information Technology</option>
-          <option value="Mechanical Engineering">Mechanical Engineering</option>
-          <option value="Civil Engineering">Civil Engineering</option>
-          <option value="AI & DS">AI & DS</option>
         </select>
       </div>
       <div className={styles.formGroup}>
