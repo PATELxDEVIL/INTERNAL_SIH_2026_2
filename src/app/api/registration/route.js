@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { isTeamNameTaken, isEnrollmentTaken, createTeam, getNextTeamId } from '@/lib/db';
-import { sendEmail } from '@/lib/email';
+import { sendEmail, buildRegistrationEmail, buildMemberEmail } from '@/lib/email';
 import bcrypt from 'bcryptjs';
 
 const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test((email || '').trim());
@@ -73,30 +73,38 @@ export async function POST(req) {
     // Save to relational tables
     await createTeam({ teamId, teamName, password: hashedPassword, leader, members });
 
-    // Send emails (non-blocking)
-    const rulesText = `Internal SIH 2026 Rules:
-1. Team must have 6 members and 1 female.
-2. Complete Mentor Details for final confirmation.
-3. Plagiarism leads to disqualification.
-4. Decisions of the committee are final.`;
-
+    // Send HTML emails (non-blocking – won't fail registration if email fails)
     try {
+      // Send confirmation email with Team ID + Password to Team Leader
       await sendEmail({
         to: leader.email,
-        subject: `Registration Successful - ${teamName} - Internal SIH 2026`,
-        text: `Congratulations! Your team ${teamName} has been successfully registered.\n\nTeam ID: ${teamId}\nPassword: ${plainPassword}\n\nLogin at /team/login to submit Mentor Details.\n\n${rulesText}`
+        subject: `✅ Registration Successful — Team ${teamName} | Internal SIH 2026`,
+        text: `Your team ${teamName} has been registered.\nTeam ID: ${teamId}\nPassword: ${plainPassword}\nLogin at https://internal-sih-2026-2.vercel.app/team/login`,
+        html: buildRegistrationEmail({
+          teamName,
+          teamId,
+          password: plainPassword,
+          leaderName: leader.name
+        })
       });
+
+      // Send member notification emails
       for (const member of members) {
         if (member.email) {
           await sendEmail({
             to: member.email,
-            subject: `Registered for Internal SIH 2026 - Team ${teamName}`,
-            text: `Hello ${member.name},\n\nYou have been registered for Internal SIH 2026 in team "${teamName}" led by ${leader.name}.\n\n${rulesText}`
+            subject: `✅ You're Registered — Internal SIH 2026 | Team ${teamName}`,
+            text: `Hello ${member.name}, you have been registered for Internal SIH 2026 as part of team "${teamName}" led by ${leader.name}.`,
+            html: buildMemberEmail({
+              memberName: member.name,
+              teamName,
+              leaderName: leader.name
+            })
           });
         }
       }
     } catch (emailError) {
-      console.error("Non-fatal: Email failed, but team was registered.", emailError);
+      console.error("Non-fatal: Email failed, but team was registered.", emailError.message);
     }
 
     return NextResponse.json({ success: true, teamId }, { status: 200 });
