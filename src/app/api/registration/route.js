@@ -95,10 +95,11 @@ export async function POST(req) {
 3. Plagiarism leads to disqualification.
 4. Decisions of the committee are final.`;
 
-    await sendEmail({
-      to: leader.email,
-      subject: `Registration Successful - ${teamName} - Internal SIH 2026`,
-      text: `Congratulations! Your team ${teamName} has been successfully registered.
+    try {
+      await sendEmail({
+        to: leader.email,
+        subject: `Registration Successful - ${teamName} - Internal SIH 2026`,
+        text: `Congratulations! Your team ${teamName} has been successfully registered.
 
 Your Team Registration ID: ${teamId}
 Your Team Password: ${plainPassword}
@@ -106,21 +107,25 @@ Your Team Password: ${plainPassword}
 Please use these credentials to log in to the Team Portal and submit your Mentor Details.
 
 ${rulesText}`
-    });
+      });
 
-    // Send Email to Members
-    for (const member of members) {
-      if (member.email) {
-        await sendEmail({
-          to: member.email,
-          subject: `You have been registered for Internal SIH 2026`,
-          text: `Hello ${member.name},
+      // Send Email to Members
+      for (const member of members) {
+        if (member.email) {
+          await sendEmail({
+            to: member.email,
+            subject: `You have been registered for Internal SIH 2026`,
+            text: `Hello ${member.name},
 
 You have been registered for Internal SIH 2026 as part of the team "${teamName}" led by ${leader.name}.
 
 ${rulesText}`
-        });
+          });
+        }
       }
+    } catch (emailError) {
+      console.error("Non-fatal: Failed to send emails, but team was registered.", emailError);
+      // We do not throw here, so the registration still completes successfully.
     }
 
     return NextResponse.json({ success: true, teamId }, { status: 200 });
