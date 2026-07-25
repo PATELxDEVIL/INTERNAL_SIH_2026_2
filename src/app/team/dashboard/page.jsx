@@ -141,11 +141,11 @@ export default function TeamDashboard() {
   if (!team) return null;
 
   return (
-    <div className={styles.container}>
-      <div className={`${styles.card} ${styles.dashboardCard}`}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-          <h1 className={styles.title} style={{ marginBottom: 0 }}>Team Portal</h1>
-          <button onClick={handleLogout} className="btn-primary" style={{ background: '#ff4d4f' }}>Logout</button>
+    <div className={styles.dashboardContainer}>
+      <div className={styles.dashboardCard}>
+        <div className={styles.dashboardHeader}>
+          <h1 style={{ color: 'var(--primary-blue)', margin: 0, fontSize: '1.5rem' }}>Team Portal — {team.teamName}</h1>
+          <button onClick={handleLogout} className="btn-primary" style={{ background: '#dc3545', padding: '0.5rem 1.25rem' }}>Logout</button>
         </div>
 
         {msg.text && (
@@ -155,9 +155,7 @@ export default function TeamDashboard() {
         )}
 
         <div className={styles.infoBlock}>
-          <h3 style={{ marginBottom: '0.5rem' }}>Team {team.teamName}</h3>
-          <p><strong>Registration ID:</strong> {team.teamId}</p>
-          <p><strong>Status:</strong> {team.status}</p>
+          <strong>Registration ID:</strong> {team.teamId} &nbsp;|&nbsp; <strong>Status:</strong> {team.status}
         </div>
 
         {/* ── PROBLEM STATEMENT SELECTION ── */}
@@ -404,7 +402,7 @@ export default function TeamDashboard() {
               </div>
               <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
                 <button type="submit" className="btn-primary">Save Changes</button>
-                <button type="button" className={styles.btnSecondary} onClick={() => setEditingMember(null)}>Cancel</button>
+                <button type="button" onClick={() => setEditingMember(null)} style={{ padding: '0.75rem 1.5rem', background: '#eee', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: '600' }}>Cancel</button>
               </div>
             </form>
           </div>
