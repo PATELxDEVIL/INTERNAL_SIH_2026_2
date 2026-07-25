@@ -10,10 +10,9 @@ export default function Navbar() {
   const [configLoaded, setConfigLoaded] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Hide navbar entirely on admin pages — admin has its own sidebar
-  if (pathname.startsWith('/admin')) return null;
-
   useEffect(() => {
+    // Don't fetch if on admin pages
+    if (pathname.startsWith('/admin')) return;
     fetch('/api/admin/config')
       .then(res => res.json())
       .then(data => {
@@ -36,6 +35,9 @@ export default function Navbar() {
     ksv: (config.logos && typeof config.logos === 'object' && config.logos.ksv) || defaultLogos.ksv,
     vsitr: (config.logos && typeof config.logos === 'object' && config.logos.vsitr) || defaultLogos.vsitr
   } : null;
+
+  // Admin pages have their own sidebar layout — don't render the public navbar
+  if (pathname.startsWith('/admin')) return null;
 
   return (
     <nav className={styles.navbar}>
