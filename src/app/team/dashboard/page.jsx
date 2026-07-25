@@ -20,6 +20,7 @@ export default function TeamDashboard() {
 
   const [editingMember, setEditingMember] = useState(null);
   const [memberMsg, setMemberMsg] = useState({ type: '', text: '' });
+  const [editingMentor, setEditingMentor] = useState(false);
 
   useEffect(() => {
     const session = localStorage.getItem('teamSession');
@@ -68,6 +69,8 @@ export default function TeamDashboard() {
       } else {
         setMsg({ type: 'success', text: 'Mentor details submitted successfully!' });
         setTeam(data.team || { ...team, mentor, status: 'Registration Completed' });
+        setEditingMentor(false);
+        setMentor({ name: '', contact: '', email: '', department: '', institute: '', address: '' });
       }
     } catch (err) {
       setMsg({ type: 'error', text: 'Failed to submit mentor details.' });
@@ -203,10 +206,26 @@ export default function TeamDashboard() {
         {/* ── MENTOR DETAILS ── */}
         <div className={styles.dashboardSection}>
           <h2 className={styles.sectionTitle}>2. Mentor Details</h2>
-          {team.mentor ? (
+          {team.mentor && !editingMentor ? (
             <div style={{ background: '#f6ffed', padding: '1rem', border: '1px solid #b7eb8f', borderRadius: '4px' }}>
-              <p>✅ Mentor details have been submitted.</p>
-              <p><strong>Mentor Name:</strong> {team.mentor.name}</p>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem' }}>
+                <div>
+                  <p style={{ marginBottom: '0.3rem' }}>✅ <strong>Mentor Name:</strong> {team.mentor.name}</p>
+                  <p style={{ marginBottom: '0.3rem' }}><strong>Contact:</strong> {team.mentor.contact} &nbsp;|&nbsp; <strong>Email:</strong> {team.mentor.email}</p>
+                  <p style={{ marginBottom: 0 }}><strong>Department:</strong> {team.mentor.department} &nbsp;|&nbsp; <strong>Institute:</strong> {team.mentor.institute}</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMentor({ ...team.mentor });
+                    setEditingMentor(true);
+                    setMsg({ type: '', text: '' });
+                  }}
+                  style={{ padding: '0.4rem 1rem', background: 'none', border: '1px solid var(--primary-blue)', color: 'var(--primary-blue)', borderRadius: '4px', cursor: 'pointer', fontWeight: '600', fontSize: '0.875rem', whiteSpace: 'nowrap' }}
+                >
+                  ✏️ Change Mentor
+                </button>
+              </div>
             </div>
           ) : (
             <form onSubmit={handleMentorSubmit}>
@@ -249,7 +268,22 @@ export default function TeamDashboard() {
                 <label className={styles.label}>Office Address</label>
                 <textarea className={styles.input} required value={mentor.address} onChange={e => setMentor({...mentor, address: e.target.value})} style={{ resize: 'vertical' }} />
               </div>
-              <button type="submit" className="btn-primary">Submit Mentor Details</button>
+              <button type="submit" className="btn-primary">
+                {editingMentor ? 'Update Mentor Details' : 'Submit Mentor Details'}
+              </button>
+              {editingMentor && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditingMentor(false);
+                    setMentor({ name: '', contact: '', email: '', department: '', institute: '', address: '' });
+                    setMsg({ type: '', text: '' });
+                  }}
+                  style={{ marginLeft: '1rem', padding: '0.75rem 1.5rem', background: '#eee', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: '600' }}
+                >
+                  Cancel
+                </button>
+              )}
             </form>
           )}
         </div>
