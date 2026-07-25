@@ -1,8 +1,5 @@
 import { NextResponse } from 'next/server';
 import { getConfig, setConfig, setHeroMedia, setLogos } from '@/lib/db';
-import fs from 'fs/promises';
-import path from 'path';
-import { v4 as uuidv4 } from 'uuid';
 
 export async function GET() {
   try {
@@ -18,20 +15,13 @@ export async function POST(req) {
   try {
     const body = await req.json();
     const { type, files } = body;
-    const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
-    await fs.mkdir(uploadsDir, { recursive: true });
-
     let filePaths = [];
     if (files && Array.isArray(files)) {
+      // Store the raw base64 string directly in the database
+      // since Vercel serverless functions have a read-only filesystem.
       for (const file of files) {
-        const matches = file.data.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
-        if (matches && matches.length === 3) {
-          const ext = matches[1].split('/')[1] || 'png';
-          const buffer = Buffer.from(matches[2], 'base64');
-          const filename = `${uuidv4()}.${ext}`;
-          const filePath = path.join(uploadsDir, filename);
-          await fs.writeFile(filePath, buffer);
-          filePaths.push(`/uploads/${filename}`);
+        if (file.data) {
+          filePaths.push(file.data);
         }
       }
     }

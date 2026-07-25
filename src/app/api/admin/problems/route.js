@@ -1,8 +1,5 @@
 import { NextResponse } from 'next/server';
 import { getProblems, createProblem, toggleProblemLive } from '@/lib/db';
-import { v4 as uuidv4 } from 'uuid';
-import fs from 'fs/promises';
-import path from 'path';
 
 export async function GET() {
   try {
@@ -25,15 +22,9 @@ export async function POST(req) {
 
     let pdfUrl = null;
     if (pdfFile && pdfFile.data) {
-      const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
-      await fs.mkdir(uploadsDir, { recursive: true });
-      const matches = pdfFile.data.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
-      if (matches) {
-        const buffer = Buffer.from(matches[2], 'base64');
-        const filename = `${uuidv4()}.pdf`;
-        await fs.writeFile(path.join(uploadsDir, filename), buffer);
-        pdfUrl = `/uploads/${filename}`;
-      }
+      // Store the raw base64 string directly in the database
+      // since Vercel serverless functions have a read-only filesystem.
+      pdfUrl = pdfFile.data;
     }
 
     const id = await createProblem({ title, description: description || '', pdfUrl });
