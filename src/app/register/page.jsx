@@ -85,16 +85,6 @@ export default function Register() {
     setMembers(updated);
   };
 
-  const addMember = () => {
-    if (members.length < 5) setMembers([...members, { ...emptyMember }]);
-    else showError("Limit Reached", "Maximum 5 members allowed (6 total with leader).");
-  };
-
-  const removeMember = (index) => {
-    const updated = members.filter((_, i) => i !== index);
-    setMembers(updated);
-  };
-
   const handleSubmit = async () => {
     if (members.length !== 5)
       return showError("Registration Incomplete", "Each team must consist of exactly 6 members, including the Team Leader.");
@@ -312,15 +302,10 @@ Please Note: The Team Leader must regularly check their email inbox for further 
               <div key={index} className={styles.memberCard}>
                 <div className={styles.memberHeader}>
                   <span>Member {index + 1}</span>
-                  <button className={styles.removeBtn} onClick={() => removeMember(index)}>Remove</button>
                 </div>
                 {renderMemberForm(member, (field, val) => handleMemberChange(index, field, val))}
               </div>
             ))}
-            
-            {members.length < 5 && (
-              <button className={styles.addBtn} onClick={addMember}>+ Add Member</button>
-            )}
 
             <div className={styles.actions}>
               <button className={styles.btnSecondary} onClick={() => setStep(2)}>Back</button>
