@@ -49,7 +49,7 @@ export default function AdminLogin() {
       const res = await fetch('/api/admin/forgot-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'request_otp' })
+        body: JSON.stringify({ action: 'send_otp' })
       });
       const data = await res.json();
       if (!res.ok) {
@@ -77,7 +77,7 @@ export default function AdminLogin() {
       const res = await fetch('/api/admin/forgot-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'verify_otp', otp, newPassword })
+        body: JSON.stringify({ action: 'reset_password', otp, newPassword })
       });
       const data = await res.json();
       if (!res.ok) {
