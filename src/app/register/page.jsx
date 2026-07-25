@@ -11,6 +11,23 @@ export default function Register() {
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [teamName, setTeamName] = useState('');
+  const [isClosed, setIsClosed] = useState(false);
+  const [loadingConfig, setLoadingConfig] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/admin/config')
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.deadline) {
+          const deadlineTime = new Date(data.deadline).getTime();
+          if (new Date().getTime() > deadlineTime) {
+            setIsClosed(true);
+          }
+        }
+      })
+      .catch(console.error)
+      .finally(() => setLoadingConfig(false));
+  }, []);
   
   const emptyMember = {
     name: '', gender: '', enrollment: '', semester: '', department: '', phone: '', email: ''
@@ -211,6 +228,24 @@ Please Note: The Team Leader must regularly check their email inbox for further 
       </div>
     </div>
   );
+
+  if (loadingConfig) {
+    return <div className={styles.pageContainer}><div style={{ textAlign: 'center', padding: '3rem', fontSize: '1.2rem', color: '#555' }}>Loading...</div></div>;
+  }
+
+  if (isClosed) {
+    return (
+      <div className={styles.pageContainer}>
+        <div className={styles.formCard} style={{ textAlign: 'center', padding: '4rem 2rem' }}>
+          <h1 style={{ color: '#c0392b', fontSize: '2.5rem', marginBottom: '1rem' }}>Registration Closed</h1>
+          <p style={{ color: '#555', fontSize: '1.2rem', lineHeight: '1.6', marginBottom: '2rem' }}>
+            The deadline for team registration has passed. We are no longer accepting new registrations for Internal SIH 2026.
+          </p>
+          <button className="btn-primary" onClick={() => router.push('/')}>Return to Home</button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.pageContainer}>

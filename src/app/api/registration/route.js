@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { isTeamNameTaken, isEnrollmentTaken, createTeam, getNextTeamId } from '@/lib/db';
+import { isTeamNameTaken, isEnrollmentTaken, createTeam, getNextTeamId, getConfig } from '@/lib/db';
 import { sendEmail, buildRegistrationEmail, buildMemberEmail } from '@/lib/email';
 import bcrypt from 'bcryptjs';
 
@@ -17,6 +17,14 @@ export async function POST(req) {
   try {
     const data = await req.json();
     const { teamName, leader, members } = data;
+
+    // Check if deadline has passed
+    const config = await getConfig();
+    if (config && config.deadline) {
+      if (new Date().getTime() > new Date(config.deadline).getTime()) {
+        return NextResponse.json({ error: "Registration is closed. The deadline has passed." }, { status: 403 });
+      }
+    }
 
     if (!teamName || !leader || !members) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
