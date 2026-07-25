@@ -3,6 +3,10 @@ import { readDB, writeDB } from '@/lib/db';
 import { sendEmail } from '@/lib/email';
 import bcrypt from 'bcryptjs';
 
+const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test((email || '').trim());
+const isValidPhone = (phone) => /^[6-9]\d{9}$/.test((phone || '').trim());
+
+
 const generatePassword = () => {
   const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
   let password = "";
@@ -32,6 +36,18 @@ export async function POST(req) {
     
     if (allMembers.length !== 6) {
       return NextResponse.json({ error: "Team must consist of exactly 6 members" }, { status: 400 });
+    }
+
+    // Validate email & phone for every member
+    for (let i = 0; i < allMembers.length; i++) {
+      const m = allMembers[i];
+      const label = i === 0 ? 'Team Leader' : `Member ${i}`;
+      if (!isValidEmail(m.email)) {
+        return NextResponse.json({ error: `${label}: "${m.email}" is not a valid email address.` }, { status: 400 });
+      }
+      if (!isValidPhone(m.phone)) {
+        return NextResponse.json({ error: `${label}: Mobile number must be exactly 10 digits and start with 6–9. Got: "${m.phone}"` }, { status: 400 });
+      }
     }
 
     if (!allMembers.some(m => m.gender.toLowerCase() === 'female')) {
