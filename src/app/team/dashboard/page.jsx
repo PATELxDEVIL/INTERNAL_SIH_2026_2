@@ -143,9 +143,9 @@ export default function TeamDashboard() {
   return (
     <div className={styles.container}>
       <div className={`${styles.card} ${styles.dashboardCard}`}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-          <h1 className={styles.title} style={{ marginBottom: 0 }}>Team Portal</h1>
-          <button onClick={handleLogout} className="btn-primary" style={{ background: '#ff4d4f' }}>Logout</button>
+        <div className={styles.dashboardHeader}>
+          <h1 className={styles.title}>Team Dashboard</h1>
+          <button className="btn-primary" style={{ background: '#E63946', boxShadow: 'none' }} onClick={handleLogout}>Logout</button>
         </div>
 
         {msg.text && (
@@ -155,58 +155,17 @@ export default function TeamDashboard() {
         )}
 
         <div className={styles.infoBlock}>
-          <h3 style={{ marginBottom: '0.5rem' }}>Team {team.teamName}</h3>
-          <p><strong>Registration ID:</strong> {team.teamId}</p>
-          <p><strong>Status:</strong> {team.status}</p>
+          <h2 style={{ fontSize: '1.2rem', marginBottom: '0.5rem', color: 'var(--white)' }}>Team Registration ID: {team.teamId}</h2>
+          <p style={{ margin: 0 }}><strong>Status:</strong> {team.status}</p>
+          {team.status === 'Pending' && <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.9rem', color: '#94A3B8' }}>Your team is under review. You can select your Mentor and Problem Statement.</p>}
         </div>
 
-        {/* ── PROBLEM STATEMENT SELECTION ── */}
+        {/* ── MENTOR SELECTION ── */}
         <div className={styles.dashboardSection}>
-          <h2 className={styles.sectionTitle}>1. Problem Statement</h2>
-          {problemMsg.text && (
-            <div className={problemMsg.type === 'error' ? styles.error : styles.success} style={{ marginBottom: '1rem' }}>
-              {problemMsg.text}
-            </div>
-          )}
-          {team.problem ? (
-            <div style={{ background: '#e6f7ff', padding: '1rem', border: '1px solid #91d5ff', borderRadius: '4px' }}>
-              <p>✅ <strong>Selected Problem:</strong> {team.problem.title}</p>
-              <button 
-                onClick={() => openPdfInNewTab(team.problem.pdfUrl, team.problem.title)}
-                style={{ color: 'var(--primary-blue)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginTop: '0.5rem', fontWeight: 'bold' }}
-              >
-                📄 View Problem Details (PDF)
-              </button>
-              <div style={{ marginTop: '1rem' }}>
-                <p style={{ fontSize: '0.85rem', color: '#555', marginBottom: '0.5rem' }}>Want to change it?</p>
-                <form onSubmit={handleSelectProblem} style={{ display: 'flex', gap: '0.5rem', maxWidth: '400px' }}>
-                  <select className={styles.select} required value={selectedProblemId} onChange={e => setSelectedProblemId(e.target.value)} style={{ marginBottom: 0 }}>
-                    <option value="">Select a new problem</option>
-                    {problems.map(p => <option key={p.id} value={p.id}>{p.title}</option>)}
-                  </select>
-                  <button type="submit" className="btn-primary" style={{ padding: '0.5rem 1rem' }}>Change</button>
-                </form>
-              </div>
-            </div>
-          ) : (
-            <form onSubmit={handleSelectProblem}>
-              <div className={styles.formGroup} style={{ maxWidth: '500px' }}>
-                <label className={styles.label}>Select a Problem Statement</label>
-                <select className={styles.select} required value={selectedProblemId} onChange={e => setSelectedProblemId(e.target.value)}>
-                  <option value="">Choose...</option>
-                  {problems.map(p => <option key={p.id} value={p.id}>{p.title}</option>)}
-                </select>
-              </div>
-              <button type="submit" className="btn-primary">Lock Problem Statement</button>
-            </form>
-          )}
-        </div>
-
-        {/* ── MENTOR DETAILS ── */}
-        <div className={styles.dashboardSection}>
-          <h2 className={styles.sectionTitle}>2. Mentor Details</h2>
+          <h2 className={styles.sectionTitle}>1. Mentor Details</h2>
+          <p style={{ marginBottom: '1.5rem', fontSize: '0.9rem', color: '#CBD5E1' }}>Please provide details for the faculty member mentoring your team.</p>
           {team.mentor ? (
-            <div style={{ background: '#f6ffed', padding: '1rem', border: '1px solid #b7eb8f', borderRadius: '4px' }}>
+            <div style={{ background: 'rgba(255,255,255,0.05)', padding: '1rem', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '4px' }}>
               <p>✅ Mentor details have been submitted.</p>
               <p><strong>Mentor Name:</strong> {team.mentor.name}</p>
             </div>
@@ -256,10 +215,44 @@ export default function TeamDashboard() {
           )}
         </div>
 
+        {/* ── PROBLEM STATEMENT SELECTION ── */}
+        <div className={styles.dashboardSection}>
+          <h2 className={styles.sectionTitle}>2. Select Problem Statement</h2>
+          {problemMsg.text && (
+            <div className={problemMsg.type === 'error' ? styles.error : styles.success} style={{ marginBottom: '1rem' }}>
+              {problemMsg.text}
+            </div>
+          )}
+          {team.problem ? (
+            <div style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', padding: '1.5rem', borderRadius: '12px' }}>
+              <h3 style={{ color: 'var(--accent-cyan)', marginBottom: '0.5rem' }}>{team.problem.title}</h3>
+              <p style={{ color: '#E2E8F0', marginBottom: '1rem' }}>{team.problem.description}</p>
+              <button 
+                onClick={() => openPdfInNewTab(team.problem.pdfUrl, team.problem.title)}
+                className="btn-primary" 
+                style={{ fontSize: '0.9rem', background: '#10B981' }}
+              >
+                View Selected Problem PDF
+              </button>
+            </div>
+          ) : (
+            <form onSubmit={handleSelectProblem}>
+              <div className={styles.formGroup} style={{ maxWidth: '500px' }}>
+                <label className={styles.label}>Select a Problem Statement</label>
+                <select className={styles.select} required value={selectedProblemId} onChange={e => setSelectedProblemId(e.target.value)}>
+                  <option value="">Choose...</option>
+                  {problems.map(p => <option key={p.id} value={p.id}>{p.title}</option>)}
+                </select>
+              </div>
+              <button type="submit" className="btn-primary">Lock Problem Statement</button>
+            </form>
+          )}
+        </div>
+
         {/* ── EDIT TEAM MEMBERS ── */}
         <div className={styles.dashboardSection}>
           <h2 className={styles.sectionTitle}>3. Manage Team Members</h2>
-          <p style={{ fontSize: '0.9rem', color: '#666', marginBottom: '1rem' }}>The Team Leader cannot be changed. You can edit the details of other members.</p>
+          <p style={{ marginBottom: '1.5rem', fontSize: '0.9rem', color: '#CBD5E1' }}>Ensure all member details are accurate.</p>
           
           <div className={styles.tableContainer}>
             <table className={styles.modernTable}>
@@ -274,7 +267,6 @@ export default function TeamDashboard() {
                 </tr>
               </thead>
               <tbody>
-                {/* Leader Row */}
                 <tr>
                   <td>
                     <div className={styles.avatarRow}>
@@ -299,7 +291,6 @@ export default function TeamDashboard() {
                   </td>
                 </tr>
 
-                {/* Member Rows */}
                 {team.members.map((m, i) => (
                   <tr key={m.id}>
                     <td>
@@ -361,9 +352,9 @@ export default function TeamDashboard() {
 
       {/* ── EDIT MEMBER MODAL ── */}
       {editingMember && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000, padding: '1rem' }}>
-          <div style={{ background: '#fff', borderRadius: '8px', padding: '2rem', width: '100%', maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto' }}>
-            <h2 style={{ marginBottom: '1.5rem', color: 'var(--primary-blue)' }}>Edit Member Details</h2>
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.8)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000, backdropFilter: 'blur(5px)', padding: '1rem' }}>
+          <div style={{ background: 'var(--bg-color, #1a1a1a)', padding: '2rem', borderRadius: '16px', width: '100%', maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto', border: '1px solid var(--glass-border, #333)', boxShadow: '0 20px 40px rgba(0,0,0,0.5)' }}>
+            <h2 style={{ marginBottom: '1.5rem', color: 'var(--white)' }}>Edit Member Details</h2>
             {memberMsg.text && (
               <div className={memberMsg.type === 'error' ? styles.error : styles.success} style={{ marginBottom: '1rem' }}>{memberMsg.text}</div>
             )}
@@ -402,9 +393,9 @@ export default function TeamDashboard() {
                   </select>
                 </div>
               </div>
-              <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
-                <button type="submit" className="btn-primary">Save Changes</button>
-                <button type="button" className={styles.btnSecondary} onClick={() => setEditingMember(null)}>Cancel</button>
+              <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
+                <button type="submit" className="btn-primary" style={{ flex: 1 }}>Save Changes</button>
+                <button type="button" className="btn-secondary" style={{ flex: 1, background: 'rgba(255,255,255,0.1)', color: 'var(--white)' }} onClick={() => setEditingMember(null)}>Cancel</button>
               </div>
             </form>
           </div>

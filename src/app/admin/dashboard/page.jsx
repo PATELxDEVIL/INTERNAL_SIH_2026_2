@@ -305,7 +305,7 @@ export default function AdminDashboard() {
       <div className="container">
         <div className={styles.dashboardHeader}>
           <h1 className={styles.title}>Admin Dashboard</h1>
-          <button className="btn-primary" style={{ background: '#ff4d4f' }} onClick={handleLogout}>Logout</button>
+          <button className="btn-primary" style={{ background: '#E63946', boxShadow: 'none' }} onClick={handleLogout}>Logout</button>
         </div>
 
         <div className={styles.statsGrid}>
@@ -442,22 +442,22 @@ export default function AdminDashboard() {
           <div className={styles.settingsSection}>
             <h2 className={styles.settingsTitle}>Portal Configuration</h2>
             
-            <h3 style={{ fontSize: '1rem', color: 'var(--primary-blue)', marginBottom: '1rem' }}>Upload Brand Logos</h3>
+            <h3 style={{ fontSize: '1rem', color: 'var(--accent-cyan)', marginBottom: '1rem' }}>Upload Brand Logos</h3>
 
-            <form onSubmit={e => handleFileUpload(e, 'logo_sih')} style={{ marginBottom: '1.5rem', borderBottom: '1px dashed #eee', paddingBottom: '1rem' }}>
+            <form onSubmit={e => handleFileUpload(e, 'logo_sih')} style={{ marginBottom: '1.5rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '1rem' }}>
               <div className={styles.formGroup}>
                 <label className={styles.label}>SIH Logo (Official Logo)</label>
                 <input type="file" name="files" accept="image/*" className={styles.input} required />
               </div>
-              <button type="submit" className="btn-primary" style={{ background: '#28a745' }}>Update SIH Logo</button>
+              <button type="submit" className="btn-primary" style={{ background: '#10B981' }}>Update SIH Logo</button>
             </form>
 
-            <form onSubmit={e => handleFileUpload(e, 'logo_ksv')} style={{ marginBottom: '1.5rem', borderBottom: '1px dashed #eee', paddingBottom: '1rem' }}>
+            <form onSubmit={e => handleFileUpload(e, 'logo_ksv')} style={{ marginBottom: '1.5rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '1rem' }}>
               <div className={styles.formGroup}>
                 <label className={styles.label}>KSV Logo</label>
                 <input type="file" name="files" accept="image/*" className={styles.input} required />
               </div>
-              <button type="submit" className="btn-primary" style={{ background: '#28a745' }}>Update KSV Logo</button>
+              <button type="submit" className="btn-primary" style={{ background: '#10B981' }}>Update KSV Logo</button>
             </form>
 
             <form onSubmit={e => handleFileUpload(e, 'logo_vsitr')} style={{ marginBottom: '2rem' }}>
@@ -465,19 +465,19 @@ export default function AdminDashboard() {
                 <label className={styles.label}>VSITR Logo</label>
                 <input type="file" name="files" accept="image/*" className={styles.input} required />
               </div>
-              <button type="submit" className="btn-primary" style={{ background: '#28a745' }}>Update VSITR Logo</button>
+              <button type="submit" className="btn-primary" style={{ background: '#10B981' }}>Update VSITR Logo</button>
             </form>
 
-            <h3 style={{ fontSize: '1rem', color: 'var(--primary-blue)', marginBottom: '1rem', marginTop: '2rem' }}>Hero Images</h3>
-            <form onSubmit={e => handleFileUpload(e, 'heroMedia')} style={{ marginBottom: '2rem', borderBottom: '1px dashed #eee', paddingBottom: '1rem' }}>
+            <h3 style={{ fontSize: '1rem', color: 'var(--accent-cyan)', marginBottom: '1rem', marginTop: '2rem' }}>Hero Images</h3>
+            <form onSubmit={e => handleFileUpload(e, 'heroMedia')} style={{ marginBottom: '2rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '1rem' }}>
               <div className={styles.formGroup}>
                 <label className={styles.label}>Upload Hero Slider Images (Select multiple)</label>
                 <input type="file" name="files" multiple accept="image/*" className={styles.input} required />
               </div>
-              <button type="submit" className="btn-primary" style={{ background: '#28a745' }}>Update Hero Slider</button>
+              <button type="submit" className="btn-primary" style={{ background: '#10B981' }}>Update Hero Slider</button>
             </form>
 
-            <h3 style={{ fontSize: '1rem', color: 'var(--primary-blue)', marginBottom: '1rem', marginTop: '2rem' }}>Timer Configuration</h3>
+            <h3 style={{ fontSize: '1rem', color: 'var(--accent-cyan)', marginBottom: '1rem', marginTop: '2rem' }}>Timer Configuration</h3>
             <form onSubmit={handleTimerConfigSubmit}>
               <div className={styles.formGroup}>
                 <label className={styles.label}>Deadline Date & Time</label>
@@ -591,31 +591,31 @@ export default function AdminDashboard() {
             </div>
             
             <div>
-              <h3>All Problem Statements</h3>
-              <div style={{ marginTop: '1rem', maxHeight: '400px', overflowY: 'auto' }}>
+              <h3 style={{ color: 'var(--accent-cyan)' }}>All Problem Statements</h3>
+              <div style={{ marginTop: '1rem', maxHeight: '400px', overflowY: 'auto', paddingRight: '1rem' }}>
                 {problems.map(p => (
-                  <div key={p.id} style={{ border: '1px solid #eee', padding: '1rem', marginBottom: '1rem', borderRadius: '4px' }}>
-                    <h4 style={{ color: 'var(--primary-blue)', marginBottom: '0.5rem' }}>{p.title}</h4>
-                    <p style={{ fontSize: '0.875rem', color: '#666', marginBottom: '1rem' }}>{p.description}</p>
+                  <div key={p.id} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', padding: '1.5rem', marginBottom: '1rem', borderRadius: '12px' }}>
+                    <h4 style={{ color: 'var(--white)', marginBottom: '0.5rem', fontSize: '1.1rem' }}>{p.title}</h4>
+                    <p style={{ fontSize: '0.9rem', color: '#CBD5E1', marginBottom: '1rem' }}>{p.description}</p>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <button 
                         onClick={() => openPdfInNewTab(p.pdfUrl, p.title)} 
-                        style={{ color: 'var(--primary-red)', fontWeight: '600', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                        style={{ color: 'var(--accent-cyan)', fontWeight: '600', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
                       >
-                        View PDF (New Tab)
+                        View PDF
                       </button>
                       <div style={{ display: 'flex', gap: '0.5rem' }}>
                         <button 
                           onClick={() => toggleProblemStatus(p.id)}
                           className="btn-primary"
-                          style={{ padding: '0.25rem 0.5rem', background: p.isLive ? '#ff4d4f' : '#28a745', fontSize: '0.8rem' }}
+                          style={{ padding: '0.4rem 0.8rem', background: p.isLive ? '#E63946' : '#10B981', fontSize: '0.8rem' }}
                         >
                           {p.isLive ? 'Take Offline' : 'Make Live'}
                         </button>
                         <button 
                           onClick={() => deleteProblem(p.id)}
                           className="btn-primary"
-                          style={{ padding: '0.25rem 0.5rem', background: '#333', fontSize: '0.8rem' }}
+                          style={{ padding: '0.4rem 0.8rem', background: '#334155', fontSize: '0.8rem' }}
                         >
                           Delete
                         </button>
@@ -623,7 +623,7 @@ export default function AdminDashboard() {
                     </div>
                   </div>
                 ))}
-                {problems.length === 0 && <p>No problem statements uploaded yet.</p>}
+                {problems.length === 0 && <p style={{ color: '#94A3B8' }}>No problem statements uploaded yet.</p>}
               </div>
             </div>
           </div>
@@ -633,13 +633,13 @@ export default function AdminDashboard() {
 
       {/* ── VIEW TEAM MODAL ── */}
       {selectedTeam && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 2000, padding: '2rem' }}>
-          <div style={{ background: '#fff', borderRadius: '12px', width: '100%', maxWidth: '800px', maxHeight: '90vh', display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '0 10px 40px rgba(0,0,0,0.2)' }}>
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.8)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 2000, padding: '2rem', backdropFilter: 'blur(5px)' }}>
+          <div style={{ background: 'var(--bg-color)', borderRadius: '16px', width: '100%', maxWidth: '800px', maxHeight: '90vh', display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '0 20px 60px rgba(0,0,0,0.5)', border: '1px solid var(--glass-border)' }}>
             
-            <div style={{ padding: '1.5rem 2rem', background: '#2b4492', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ padding: '1.5rem 2rem', background: 'var(--glass-bg)', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
               <div>
-                <h2 style={{ margin: 0, fontSize: '1.25rem' }}>Team {selectedTeam.teamName}</h2>
-                <span style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)' }}>{selectedTeam.teamId} • {selectedTeam.status}</span>
+                <h2 style={{ margin: 0, fontSize: '1.25rem', color: 'var(--white)' }}>Team {selectedTeam.teamName}</h2>
+                <span style={{ fontSize: '0.85rem', color: 'var(--accent-cyan)' }}>{selectedTeam.teamId} • {selectedTeam.status}</span>
               </div>
               <button 
                 onClick={() => setSelectedTeam(null)}
@@ -649,18 +649,18 @@ export default function AdminDashboard() {
               </button>
             </div>
 
-            <div style={{ padding: '2rem', overflowY: 'auto', flex: 1 }}>
+            <div style={{ padding: '2rem', overflowY: 'auto', flex: 1, color: '#E2E8F0' }}>
               <div className={styles.grid2Col} style={{ marginBottom: '2rem', gap: '1rem' }}>
-                <div style={{ background: '#f8f9fa', padding: '1.5rem', borderRadius: '8px', border: '1px solid #eee' }}>
-                  <h3 style={{ color: '#2b4492', marginBottom: '1rem', fontSize: '1rem' }}>Team Details</h3>
+                <div style={{ background: 'rgba(255,255,255,0.03)', padding: '1.5rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                  <h3 style={{ color: 'var(--accent-cyan)', marginBottom: '1rem', fontSize: '1rem' }}>Team Details</h3>
                   <p style={{ margin: '0 0 0.5rem 0' }}><strong>Leader:</strong> {selectedTeam.leader.name} ({selectedTeam.leader.enrollment})</p>
                   <p style={{ margin: '0 0 0.5rem 0' }}><strong>Email:</strong> {selectedTeam.leader.email}</p>
                   <p style={{ margin: '0 0 0.5rem 0' }}><strong>Phone:</strong> {selectedTeam.leader.phone}</p>
                   <p style={{ margin: '0 0 0.5rem 0' }}><strong>Registered:</strong> {new Date(selectedTeam.createdAt).toLocaleString()}</p>
                 </div>
 
-                <div style={{ background: '#f8f9fa', padding: '1.5rem', borderRadius: '8px', border: '1px solid #eee' }}>
-                  <h3 style={{ color: '#2b4492', marginBottom: '1rem', fontSize: '1rem' }}>Mentor & Problem</h3>
+                <div style={{ background: 'rgba(255,255,255,0.03)', padding: '1.5rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                  <h3 style={{ color: 'var(--accent-cyan)', marginBottom: '1rem', fontSize: '1rem' }}>Mentor & Problem</h3>
                   {selectedTeam.mentor ? (
                     <>
                       <p style={{ margin: '0 0 0.5rem 0' }}><strong>Mentor:</strong> {selectedTeam.mentor.name}</p>
@@ -668,50 +668,52 @@ export default function AdminDashboard() {
                       <p style={{ margin: '0 0 0.5rem 0' }}><strong>Institute:</strong> {selectedTeam.mentor.institute}</p>
                     </>
                   ) : (
-                    <p style={{ color: '#888', fontStyle: 'italic', margin: '0 0 1rem 0' }}>No mentor selected yet.</p>
+                    <p style={{ color: '#64748B', fontStyle: 'italic', margin: '0 0 1rem 0' }}>No mentor selected yet.</p>
                   )}
 
                   {selectedTeam.problem ? (
                     <p style={{ margin: '0' }}><strong>Problem:</strong> {selectedTeam.problem.title}</p>
                   ) : (
-                    <p style={{ color: '#888', fontStyle: 'italic', margin: 0 }}>No problem statement selected yet.</p>
+                    <p style={{ color: '#64748B', fontStyle: 'italic', margin: 0 }}>No problem statement selected yet.</p>
                   )}
                 </div>
               </div>
 
-              <h3 style={{ color: '#2b4492', marginBottom: '1rem', fontSize: '1rem', paddingBottom: '0.5rem', borderBottom: '2px solid #eee' }}>All Team Members</h3>
+              <h3 style={{ color: 'var(--accent-cyan)', marginBottom: '1rem', fontSize: '1rem', paddingBottom: '0.5rem', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>All Team Members</h3>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
                 <thead>
-                  <tr style={{ textAlign: 'left', color: '#888' }}>
-                    <th style={{ padding: '0.5rem', borderBottom: '1px solid #eee' }}>Role</th>
-                    <th style={{ padding: '0.5rem', borderBottom: '1px solid #eee' }}>Name</th>
-                    <th style={{ padding: '0.5rem', borderBottom: '1px solid #eee' }}>Enrollment</th>
-                    <th style={{ padding: '0.5rem', borderBottom: '1px solid #eee' }}>Dept / Sem</th>
+                  <tr style={{ textAlign: 'left', color: '#94A3B8' }}>
+                    <th style={{ padding: '0.75rem 0.5rem', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>Role</th>
+                    <th style={{ padding: '0.75rem 0.5rem', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>Name</th>
+                    <th style={{ padding: '0.75rem 0.5rem', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>Enrollment</th>
+                    <th style={{ padding: '0.75rem 0.5rem', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>Dept / Sem</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td style={{ padding: '0.75rem 0.5rem', borderBottom: '1px solid #f5f5f5', color: '#0ca678', fontWeight: '600' }}>Leader</td>
-                    <td style={{ padding: '0.75rem 0.5rem', borderBottom: '1px solid #f5f5f5', fontWeight: '600' }}>{selectedTeam.leader.name}</td>
-                    <td style={{ padding: '0.75rem 0.5rem', borderBottom: '1px solid #f5f5f5' }}>{selectedTeam.leader.enrollment}</td>
-                    <td style={{ padding: '0.75rem 0.5rem', borderBottom: '1px solid #f5f5f5' }}>{selectedTeam.leader.department}, Sem {selectedTeam.leader.semester}</td>
+                    <td style={{ padding: '0.75rem 0.5rem', borderBottom: '1px solid rgba(255,255,255,0.05)', color: '#10B981', fontWeight: '600' }}>Leader</td>
+                    <td style={{ padding: '0.75rem 0.5rem', borderBottom: '1px solid rgba(255,255,255,0.05)', fontWeight: '600', color: 'var(--white)' }}>{selectedTeam.leader.name}</td>
+                    <td style={{ padding: '0.75rem 0.5rem', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>{selectedTeam.leader.enrollment}</td>
+                    <td style={{ padding: '0.75rem 0.5rem', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>{selectedTeam.leader.department}, Sem {selectedTeam.leader.semester}</td>
                   </tr>
                   {selectedTeam.members.map(m => (
                     <tr key={m.id}>
-                      <td style={{ padding: '0.75rem 0.5rem', borderBottom: '1px solid #f5f5f5', color: '#666' }}>Member</td>
-                      <td style={{ padding: '0.75rem 0.5rem', borderBottom: '1px solid #f5f5f5', fontWeight: '500' }}>{m.name}</td>
-                      <td style={{ padding: '0.75rem 0.5rem', borderBottom: '1px solid #f5f5f5' }}>{m.enrollment}</td>
-                      <td style={{ padding: '0.75rem 0.5rem', borderBottom: '1px solid #f5f5f5' }}>{m.department}, Sem {m.semester}</td>
+                      <td style={{ padding: '0.75rem 0.5rem', borderBottom: '1px solid rgba(255,255,255,0.05)', color: '#94A3B8' }}>Member</td>
+                      <td style={{ padding: '0.75rem 0.5rem', borderBottom: '1px solid rgba(255,255,255,0.05)', fontWeight: '500', color: 'var(--white)' }}>{m.name}</td>
+                      <td style={{ padding: '0.75rem 0.5rem', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>{m.enrollment}</td>
+                      <td style={{ padding: '0.75rem 0.5rem', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>{m.department}, Sem {m.semester}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
 
-            <div style={{ padding: '1rem 2rem', background: '#fafafa', borderTop: '1px solid #eee', display: 'flex', justifyContent: 'flex-end' }}>
+            <div style={{ padding: '1.25rem 2rem', background: 'rgba(255,255,255,0.02)', borderTop: '1px solid rgba(255,255,255,0.1)', display: 'flex', justifyContent: 'flex-end' }}>
               <button 
                 onClick={() => setSelectedTeam(null)}
-                style={{ padding: '0.5rem 1.5rem', background: '#e0e0e0', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: '600', color: '#333' }}
+                style={{ padding: '0.6rem 1.5rem', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '8px', cursor: 'pointer', fontWeight: '600', color: 'var(--white)', transition: 'background 0.3s' }}
+                onMouseOver={(e) => e.target.style.background = 'rgba(255,255,255,0.2)'}
+                onMouseOut={(e) => e.target.style.background = 'rgba(255,255,255,0.1)'}
               >
                 Close
               </button>
