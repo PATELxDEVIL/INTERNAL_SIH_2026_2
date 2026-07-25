@@ -13,11 +13,14 @@ export async function getAllTeams() {
   const members = await sql`SELECT * FROM team_members ORDER BY team_id, is_leader DESC`;
   const mentors = await sql`SELECT * FROM mentors`;
 
+  const problems = await sql`SELECT * FROM problem_statements`;
+
   return teams.map(team => {
     const teamMembers = members.filter(m => m.team_id === team.team_id);
     const leader = teamMembers.find(m => m.is_leader);
     const mems = teamMembers.filter(m => !m.is_leader);
     const mentor = mentors.find(m => m.team_id === team.team_id) || null;
+    const problem = problems.find(p => p.id === team.problem_id) || null;
 
     return {
       teamId: team.team_id,
@@ -28,6 +31,7 @@ export async function getAllTeams() {
       leader: leader ? formatMember(leader) : null,
       members: mems.map(formatMember),
       mentor: mentor ? formatMentor(mentor) : null,
+      problem: problem ? { id: problem.id, title: problem.title, description: problem.description, pdfUrl: problem.pdf_url } : null,
     };
   });
 }
@@ -43,6 +47,14 @@ export async function getTeamById(teamId) {
   const leader = members.find(m => m.is_leader);
   const mems = members.filter(m => !m.is_leader);
 
+  let problem = null;
+  if (team.problem_id) {
+    const [pRow] = await sql`SELECT * FROM problem_statements WHERE id = ${team.problem_id}`;
+    if (pRow) {
+      problem = { id: pRow.id, title: pRow.title, description: pRow.description, pdfUrl: pRow.pdf_url };
+    }
+  }
+
   return {
     teamId: team.team_id,
     teamName: team.team_name,
@@ -52,6 +64,7 @@ export async function getTeamById(teamId) {
     leader: leader ? formatMember(leader) : null,
     members: mems.map(formatMember),
     mentor: mentor ? formatMentor(mentor) : null,
+    problem,
   };
 }
 
@@ -88,6 +101,22 @@ export async function updateTeamPassword(teamId, hashedPassword) {
 export async function updateTeamStatus(teamId, status) {
   const sql = getSql();
   await sql`UPDATE teams SET status = ${status} WHERE team_id = ${teamId}`;
+}
+
+export async function updateTeamProblem(teamId, problemId) {
+  const sql = getSql();
+  await sql`UPDATE teams SET problem_id = ${problemId} WHERE team_id = ${teamId}`;
+}
+
+export async function updateTeamMember(id, m) {
+  const sql = getSql();
+  await sql`
+    UPDATE team_members 
+    SET name = ${m.name}, email = ${m.email}, phone = ${m.phone}, 
+        gender = ${m.gender}, enrollment = ${m.enrollment}, 
+        semester = ${m.semester || ''}, department = ${m.department || ''}
+    WHERE id = ${id}
+  `;
 }
 
 export async function getNextTeamId() {
@@ -233,6 +262,7 @@ export async function validateOtp(identifier, otp) {
 
 function formatMember(m) {
   return {
+    id: m.id,
     name: m.name,
     email: m.email,
     phone: m.phone,

@@ -2,28 +2,50 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from '../team.module.css';
+import { openPdfInNewTab } from '@/lib/pdfHelper';
 
 export default function TeamDashboard() {
   const router = useRouter();
   const [team, setTeam] = useState(null);
   
-  // Mentor form state
   const [mentor, setMentor] = useState({
     name: '', contact: '', email: '', department: '', institute: '', address: ''
   });
-  
-  // Password form state
   const [passwords, setPasswords] = useState({ oldPassword: '', newPassword: '' });
-  
   const [msg, setMsg] = useState({ type: '', text: '' });
+  
+  const [problems, setProblems] = useState([]);
+  const [selectedProblemId, setSelectedProblemId] = useState('');
+  const [problemMsg, setProblemMsg] = useState({ type: '', text: '' });
+
+  const [editingMember, setEditingMember] = useState(null);
+  const [memberMsg, setMemberMsg] = useState({ type: '', text: '' });
 
   useEffect(() => {
     const session = localStorage.getItem('teamSession');
     if (!session) {
       router.push('/team/login');
-    } else {
-      setTeam(JSON.parse(session));
+      return;
     }
+    const initialTeam = JSON.parse(session);
+    setTeam(initialTeam);
+    
+    // Fetch fresh team data
+    fetch(`/api/team/details?teamId=${initialTeam.teamId}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          setTeam(data.team);
+          localStorage.setItem('teamSession', JSON.stringify(data.team));
+        }
+      });
+      
+    // Fetch problems
+    fetch('/api/team/problems')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) setProblems(data.problems);
+      });
   }, [router]);
 
   const handleLogout = () => {
@@ -41,14 +63,11 @@ export default function TeamDashboard() {
         body: JSON.stringify({ teamId: team.teamId, mentor })
       });
       const data = await res.json();
-      
       if (!res.ok) {
         setMsg({ type: 'error', text: data.error });
       } else {
         setMsg({ type: 'success', text: 'Mentor details submitted successfully!' });
-        const updatedTeam = { ...team, mentor, status: 'Registration Completed' };
-        setTeam(updatedTeam);
-        localStorage.setItem('teamSession', JSON.stringify(updatedTeam));
+        setTeam(data.team || { ...team, mentor, status: 'Registration Completed' });
       }
     } catch (err) {
       setMsg({ type: 'error', text: 'Failed to submit mentor details.' });
@@ -65,7 +84,6 @@ export default function TeamDashboard() {
         body: JSON.stringify({ teamId: team.teamId, ...passwords })
       });
       const data = await res.json();
-      
       if (!res.ok) {
         setMsg({ type: 'error', text: data.error });
       } else {
@@ -74,6 +92,49 @@ export default function TeamDashboard() {
       }
     } catch (err) {
       setMsg({ type: 'error', text: 'Failed to change password.' });
+    }
+  };
+
+  const handleSelectProblem = async (e) => {
+    e.preventDefault();
+    if (!selectedProblemId) return;
+    setProblemMsg({ type: '', text: '' });
+    try {
+      const res = await fetch('/api/team/select-problem', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ teamId: team.teamId, problemId: selectedProblemId })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setProblemMsg({ type: 'error', text: data.error });
+      } else {
+        setProblemMsg({ type: 'success', text: 'Problem statement selected successfully!' });
+        setTeam(data.team);
+      }
+    } catch (err) {
+      setProblemMsg({ type: 'error', text: 'Failed to select problem statement.' });
+    }
+  };
+
+  const handleSaveMember = async (e) => {
+    e.preventDefault();
+    setMemberMsg({ type: '', text: '' });
+    try {
+      const res = await fetch('/api/team/member', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ teamId: team.teamId, member: editingMember })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setMemberMsg({ type: 'error', text: data.error });
+      } else {
+        setTeam(data.team);
+        setEditingMember(null);
+      }
+    } catch (err) {
+      setMemberMsg({ type: 'error', text: 'Failed to update member.' });
     }
   };
 
@@ -99,8 +160,51 @@ export default function TeamDashboard() {
           <p><strong>Status:</strong> {team.status}</p>
         </div>
 
+        {/* ── PROBLEM STATEMENT SELECTION ── */}
         <div className={styles.dashboardSection}>
-          <h2 className={styles.sectionTitle}>1. Mentor Details</h2>
+          <h2 className={styles.sectionTitle}>1. Problem Statement</h2>
+          {problemMsg.text && (
+            <div className={problemMsg.type === 'error' ? styles.error : styles.success} style={{ marginBottom: '1rem' }}>
+              {problemMsg.text}
+            </div>
+          )}
+          {team.problem ? (
+            <div style={{ background: '#e6f7ff', padding: '1rem', border: '1px solid #91d5ff', borderRadius: '4px' }}>
+              <p>✅ <strong>Selected Problem:</strong> {team.problem.title}</p>
+              <button 
+                onClick={() => openPdfInNewTab(team.problem.pdfUrl, team.problem.title)}
+                style={{ color: 'var(--primary-blue)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginTop: '0.5rem', fontWeight: 'bold' }}
+              >
+                📄 View Problem Details (PDF)
+              </button>
+              <div style={{ marginTop: '1rem' }}>
+                <p style={{ fontSize: '0.85rem', color: '#555', marginBottom: '0.5rem' }}>Want to change it?</p>
+                <form onSubmit={handleSelectProblem} style={{ display: 'flex', gap: '0.5rem', maxWidth: '400px' }}>
+                  <select className={styles.select} required value={selectedProblemId} onChange={e => setSelectedProblemId(e.target.value)} style={{ marginBottom: 0 }}>
+                    <option value="">Select a new problem</option>
+                    {problems.map(p => <option key={p.id} value={p.id}>{p.title}</option>)}
+                  </select>
+                  <button type="submit" className="btn-primary" style={{ padding: '0.5rem 1rem' }}>Change</button>
+                </form>
+              </div>
+            </div>
+          ) : (
+            <form onSubmit={handleSelectProblem}>
+              <div className={styles.formGroup} style={{ maxWidth: '500px' }}>
+                <label className={styles.label}>Select a Problem Statement</label>
+                <select className={styles.select} required value={selectedProblemId} onChange={e => setSelectedProblemId(e.target.value)}>
+                  <option value="">Choose...</option>
+                  {problems.map(p => <option key={p.id} value={p.id}>{p.title}</option>)}
+                </select>
+              </div>
+              <button type="submit" className="btn-primary">Lock Problem Statement</button>
+            </form>
+          )}
+        </div>
+
+        {/* ── MENTOR DETAILS ── */}
+        <div className={styles.dashboardSection}>
+          <h2 className={styles.sectionTitle}>2. Mentor Details</h2>
           {team.mentor ? (
             <div style={{ background: '#f6ffed', padding: '1rem', border: '1px solid #b7eb8f', borderRadius: '4px' }}>
               <p>✅ Mentor details have been submitted.</p>
@@ -152,8 +256,40 @@ export default function TeamDashboard() {
           )}
         </div>
 
+        {/* ── EDIT TEAM MEMBERS ── */}
         <div className={styles.dashboardSection}>
-          <h2 className={styles.sectionTitle}>2. Change Password</h2>
+          <h2 className={styles.sectionTitle}>3. Manage Team Members</h2>
+          <p style={{ fontSize: '0.9rem', color: '#666', marginBottom: '1rem' }}>The Team Leader cannot be changed. You can edit the details of other members.</p>
+          
+          <div style={{ border: '1px solid #eee', borderRadius: '4px', overflow: 'hidden' }}>
+            {/* Leader */}
+            <div style={{ padding: '1rem', background: '#fafafa', borderBottom: '1px solid #eee' }}>
+              <strong style={{ color: 'var(--primary-blue)' }}>👑 {team.leader.name} (Leader)</strong>
+              <div style={{ fontSize: '0.85rem', color: '#555', marginTop: '0.25rem' }}>{team.leader.email} | {team.leader.phone}</div>
+            </div>
+            
+            {/* Members */}
+            {team.members.map((m, i) => (
+              <div key={m.id} style={{ padding: '1rem', borderBottom: i === team.members.length - 1 ? 'none' : '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <strong>{m.name}</strong>
+                  <div style={{ fontSize: '0.85rem', color: '#555', marginTop: '0.25rem' }}>{m.email} | {m.phone} | {m.enrollment}</div>
+                </div>
+                <button 
+                  onClick={() => setEditingMember(m)}
+                  className={styles.btnSecondary}
+                  style={{ padding: '0.25rem 0.75rem', fontSize: '0.85rem' }}
+                >
+                  Edit
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ── CHANGE PASSWORD ── */}
+        <div className={styles.dashboardSection}>
+          <h2 className={styles.sectionTitle}>4. Change Password</h2>
           <form onSubmit={handlePasswordChange}>
             <div className={styles.row}>
               <div className={styles.formGroup}>
@@ -170,6 +306,58 @@ export default function TeamDashboard() {
         </div>
 
       </div>
+
+      {/* ── EDIT MEMBER MODAL ── */}
+      {editingMember && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000, padding: '1rem' }}>
+          <div style={{ background: '#fff', borderRadius: '8px', padding: '2rem', width: '100%', maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto' }}>
+            <h2 style={{ marginBottom: '1.5rem', color: 'var(--primary-blue)' }}>Edit Member Details</h2>
+            {memberMsg.text && (
+              <div className={memberMsg.type === 'error' ? styles.error : styles.success} style={{ marginBottom: '1rem' }}>{memberMsg.text}</div>
+            )}
+            <form onSubmit={handleSaveMember}>
+              <div className={styles.row}>
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Full Name</label>
+                  <input className={styles.input} required value={editingMember.name} onChange={e => setEditingMember({...editingMember, name: e.target.value})} />
+                </div>
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Email</label>
+                  <input type="email" className={styles.input} required value={editingMember.email} onChange={e => setEditingMember({...editingMember, email: e.target.value})} />
+                </div>
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Phone (10 digits)</label>
+                  <input className={styles.input} required maxLength="10" value={editingMember.phone} onChange={e => setEditingMember({...editingMember, phone: e.target.value.replace(/\D/g, '')})} />
+                </div>
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Enrollment</label>
+                  <input className={styles.input} required value={editingMember.enrollment} onChange={e => setEditingMember({...editingMember, enrollment: e.target.value})} />
+                </div>
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Semester</label>
+                  <select className={styles.select} required value={editingMember.semester} onChange={e => setEditingMember({...editingMember, semester: e.target.value})}>
+                    <option value="">Select</option>
+                    {[1,2,3,4,5,6,7,8].map(s => <option key={s} value={s}>Semester {s}</option>)}
+                  </select>
+                </div>
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Department</label>
+                  <select className={styles.select} required value={editingMember.department} onChange={e => setEditingMember({...editingMember, department: e.target.value})}>
+                    <option value="">Select</option>
+                    <option value="Computer Engineering">Computer Engineering</option>
+                    <option value="Computer Science and Engineering">Computer Science and Engineering</option>
+                    <option value="Information Technology">Information Technology</option>
+                  </select>
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+                <button type="submit" className="btn-primary">Save Changes</button>
+                <button type="button" className={styles.btnSecondary} onClick={() => setEditingMember(null)}>Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
