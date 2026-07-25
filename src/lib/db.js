@@ -103,6 +103,14 @@ export async function updateTeamStatus(teamId, status) {
   await sql`UPDATE teams SET status = ${status} WHERE team_id = ${teamId}`;
 }
 
+export async function deleteTeam(teamId) {
+  const sql = getSql();
+  // Delete in order of constraints to be safe
+  await sql`DELETE FROM mentors WHERE team_id = ${teamId}`;
+  await sql`DELETE FROM team_members WHERE team_id = ${teamId}`;
+  await sql`DELETE FROM teams WHERE team_id = ${teamId}`;
+}
+
 export async function updateTeamProblem(teamId, problemId) {
   const sql = getSql();
   await sql`UPDATE teams SET problem_id = ${problemId} WHERE team_id = ${teamId}`;

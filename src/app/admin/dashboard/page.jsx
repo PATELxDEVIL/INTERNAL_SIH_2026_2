@@ -18,6 +18,9 @@ export default function AdminDashboard() {
   // New states for modern table UI
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('All Statuses');
+  
+  // Team view modal state
+  const [selectedTeam, setSelectedTeam] = useState(null);
 
   useEffect(() => {
     const session = localStorage.getItem('adminSession');
@@ -122,6 +125,26 @@ export default function AdminDashboard() {
       }
     } catch (e) {
       alert("Error resetting password");
+    }
+  };
+
+  const handleDeleteTeam = async (teamId) => {
+    if (!confirm(`Are you sure you want to permanently delete team ${teamId}? This will remove all their members and data.`)) return;
+    try {
+      const res = await fetch('/api/admin/teams', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'delete', teamId })
+      });
+      if (res.ok) {
+        setTeams(teams.filter(t => t.teamId !== teamId));
+        if (selectedTeam?.teamId === teamId) setSelectedTeam(null);
+      } else {
+        const data = await res.json();
+        alert(data.error || 'Failed to delete team');
+      }
+    } catch (err) {
+      alert("Error deleting team");
     }
   };
 
@@ -378,7 +401,20 @@ export default function AdminDashboard() {
                       </span>
                     </td>
                     <td>
-                      <button className={styles.modernActionLink} onClick={() => alert('View details feature coming soon!')}>View</button>
+                      <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+                        <button className={styles.modernActionLink} onClick={() => setSelectedTeam(team)}>View</button>
+                        <button 
+                          className={styles.modernActionLink} 
+                          style={{ color: '#cf1322' }} 
+                          onClick={() => handleDeleteTeam(team.teamId)}
+                          title="Delete Team"
+                        >
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                          </svg>
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -594,6 +630,95 @@ export default function AdminDashboard() {
         </div>
 
       </div>
+
+      {/* ── VIEW TEAM MODAL ── */}
+      {selectedTeam && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 2000, padding: '2rem' }}>
+          <div style={{ background: '#fff', borderRadius: '12px', width: '100%', maxWidth: '800px', maxHeight: '90vh', display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '0 10px 40px rgba(0,0,0,0.2)' }}>
+            
+            <div style={{ padding: '1.5rem 2rem', background: '#2b4492', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <h2 style={{ margin: 0, fontSize: '1.25rem' }}>Team {selectedTeam.teamName}</h2>
+                <span style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)' }}>{selectedTeam.teamId} • {selectedTeam.status}</span>
+              </div>
+              <button 
+                onClick={() => setSelectedTeam(null)}
+                style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', padding: '0.5rem' }}
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              </button>
+            </div>
+
+            <div style={{ padding: '2rem', overflowY: 'auto', flex: 1 }}>
+              <div className={styles.grid2Col} style={{ marginBottom: '2rem', gap: '1rem' }}>
+                <div style={{ background: '#f8f9fa', padding: '1.5rem', borderRadius: '8px', border: '1px solid #eee' }}>
+                  <h3 style={{ color: '#2b4492', marginBottom: '1rem', fontSize: '1rem' }}>Team Details</h3>
+                  <p style={{ margin: '0 0 0.5rem 0' }}><strong>Leader:</strong> {selectedTeam.leader.name} ({selectedTeam.leader.enrollment})</p>
+                  <p style={{ margin: '0 0 0.5rem 0' }}><strong>Email:</strong> {selectedTeam.leader.email}</p>
+                  <p style={{ margin: '0 0 0.5rem 0' }}><strong>Phone:</strong> {selectedTeam.leader.phone}</p>
+                  <p style={{ margin: '0 0 0.5rem 0' }}><strong>Registered:</strong> {new Date(selectedTeam.createdAt).toLocaleString()}</p>
+                </div>
+
+                <div style={{ background: '#f8f9fa', padding: '1.5rem', borderRadius: '8px', border: '1px solid #eee' }}>
+                  <h3 style={{ color: '#2b4492', marginBottom: '1rem', fontSize: '1rem' }}>Mentor & Problem</h3>
+                  {selectedTeam.mentor ? (
+                    <>
+                      <p style={{ margin: '0 0 0.5rem 0' }}><strong>Mentor:</strong> {selectedTeam.mentor.name}</p>
+                      <p style={{ margin: '0 0 0.5rem 0' }}><strong>Contact:</strong> {selectedTeam.mentor.contact}</p>
+                      <p style={{ margin: '0 0 0.5rem 0' }}><strong>Institute:</strong> {selectedTeam.mentor.institute}</p>
+                    </>
+                  ) : (
+                    <p style={{ color: '#888', fontStyle: 'italic', margin: '0 0 1rem 0' }}>No mentor selected yet.</p>
+                  )}
+
+                  {selectedTeam.problem ? (
+                    <p style={{ margin: '0' }}><strong>Problem:</strong> {selectedTeam.problem.title}</p>
+                  ) : (
+                    <p style={{ color: '#888', fontStyle: 'italic', margin: 0 }}>No problem statement selected yet.</p>
+                  )}
+                </div>
+              </div>
+
+              <h3 style={{ color: '#2b4492', marginBottom: '1rem', fontSize: '1rem', paddingBottom: '0.5rem', borderBottom: '2px solid #eee' }}>All Team Members</h3>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
+                <thead>
+                  <tr style={{ textAlign: 'left', color: '#888' }}>
+                    <th style={{ padding: '0.5rem', borderBottom: '1px solid #eee' }}>Role</th>
+                    <th style={{ padding: '0.5rem', borderBottom: '1px solid #eee' }}>Name</th>
+                    <th style={{ padding: '0.5rem', borderBottom: '1px solid #eee' }}>Enrollment</th>
+                    <th style={{ padding: '0.5rem', borderBottom: '1px solid #eee' }}>Dept / Sem</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style={{ padding: '0.75rem 0.5rem', borderBottom: '1px solid #f5f5f5', color: '#0ca678', fontWeight: '600' }}>Leader</td>
+                    <td style={{ padding: '0.75rem 0.5rem', borderBottom: '1px solid #f5f5f5', fontWeight: '600' }}>{selectedTeam.leader.name}</td>
+                    <td style={{ padding: '0.75rem 0.5rem', borderBottom: '1px solid #f5f5f5' }}>{selectedTeam.leader.enrollment}</td>
+                    <td style={{ padding: '0.75rem 0.5rem', borderBottom: '1px solid #f5f5f5' }}>{selectedTeam.leader.department}, Sem {selectedTeam.leader.semester}</td>
+                  </tr>
+                  {selectedTeam.members.map(m => (
+                    <tr key={m.id}>
+                      <td style={{ padding: '0.75rem 0.5rem', borderBottom: '1px solid #f5f5f5', color: '#666' }}>Member</td>
+                      <td style={{ padding: '0.75rem 0.5rem', borderBottom: '1px solid #f5f5f5', fontWeight: '500' }}>{m.name}</td>
+                      <td style={{ padding: '0.75rem 0.5rem', borderBottom: '1px solid #f5f5f5' }}>{m.enrollment}</td>
+                      <td style={{ padding: '0.75rem 0.5rem', borderBottom: '1px solid #f5f5f5' }}>{m.department}, Sem {m.semester}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div style={{ padding: '1rem 2rem', background: '#fafafa', borderTop: '1px solid #eee', display: 'flex', justifyContent: 'flex-end' }}>
+              <button 
+                onClick={() => setSelectedTeam(null)}
+                style={{ padding: '0.5rem 1.5rem', background: '#e0e0e0', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: '600', color: '#333' }}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

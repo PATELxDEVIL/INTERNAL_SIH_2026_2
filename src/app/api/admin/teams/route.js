@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getAllTeams, updateTeamPassword } from '@/lib/db';
+import { getAllTeams, updateTeamPassword, deleteTeam } from '@/lib/db';
 import bcrypt from 'bcryptjs';
 
 export async function GET() {
@@ -23,6 +23,14 @@ export async function PUT(req) {
       const hashed = await bcrypt.hash(newPassword, 10);
       await updateTeamPassword(teamId, hashed);
       return NextResponse.json({ success: true, message: "Password reset successfully" });
+    }
+
+    if (action === 'delete') {
+      if (!teamId) {
+        return NextResponse.json({ error: "Team ID required" }, { status: 400 });
+      }
+      await deleteTeam(teamId);
+      return NextResponse.json({ success: true, message: "Team deleted successfully" });
     }
 
     return NextResponse.json({ error: "Unknown action" }, { status: 400 });
