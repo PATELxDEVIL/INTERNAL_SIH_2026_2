@@ -72,6 +72,34 @@ export default function AdminDashboard() {
   const completedMentor = teams.filter(t => t.mentor).length;
 
   const [passwordReset, setPasswordReset] = useState({ teamId: '', newPassword: '' });
+
+  // Change admin password
+  const [changePass, setChangePass] = useState({ current: '', newPass: '', confirm: '' });
+  const [changePassMsg, setChangePassMsg] = useState({ text: '', type: '' });
+  const handleChangeAdminPassword = async (e) => {
+    e.preventDefault();
+    setChangePassMsg({ text: '', type: '' });
+    if (changePass.newPass !== changePass.confirm) {
+      setChangePassMsg({ text: 'New passwords do not match.', type: 'error' });
+      return;
+    }
+    try {
+      const res = await fetch('/api/admin/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ currentPassword: changePass.current, newPassword: changePass.newPass })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setChangePassMsg({ text: 'Password changed successfully!', type: 'success' });
+        setChangePass({ current: '', newPass: '', confirm: '' });
+      } else {
+        setChangePassMsg({ text: data.error || 'Failed to change password.', type: 'error' });
+      }
+    } catch {
+      setChangePassMsg({ text: 'Connection error.', type: 'error' });
+    }
+  };
   const handlePasswordReset = async (e) => {
     e.preventDefault();
     try {
@@ -372,6 +400,40 @@ export default function AdminDashboard() {
           </div>
         </div>
         
+        {/* ── CHANGE ADMIN PASSWORD ── */}
+        <div className={styles.settingsSection} style={{ maxWidth: '480px' }}>
+          <h2 className={styles.settingsTitle}>🔑 Change Admin Password</h2>
+          {changePassMsg.text && (
+            <div style={{
+              padding: '0.75rem 1rem', borderRadius: '6px', marginBottom: '1rem',
+              fontSize: '0.875rem', textAlign: 'center',
+              background: changePassMsg.type === 'error' ? '#fff5f5' : '#f6ffed',
+              color: changePassMsg.type === 'error' ? '#cc0000' : '#389e0d',
+              border: `1px solid ${changePassMsg.type === 'error' ? '#ffccc7' : '#b7eb8f'}`
+            }}>
+              {changePassMsg.text}
+            </div>
+          )}
+          <form onSubmit={handleChangeAdminPassword}>
+            <div className={styles.formGroup}>
+              <label className={styles.label}>Current Password</label>
+              <input type="password" className={styles.input} required
+                value={changePass.current} onChange={e => setChangePass({ ...changePass, current: e.target.value })} />
+            </div>
+            <div className={styles.formGroup}>
+              <label className={styles.label}>New Password</label>
+              <input type="password" className={styles.input} required minLength={6}
+                value={changePass.newPass} onChange={e => setChangePass({ ...changePass, newPass: e.target.value })} />
+            </div>
+            <div className={styles.formGroup}>
+              <label className={styles.label}>Confirm New Password</label>
+              <input type="password" className={styles.input} required minLength={6}
+                value={changePass.confirm} onChange={e => setChangePass({ ...changePass, confirm: e.target.value })} />
+            </div>
+            <button type="submit" className="btn-primary">Update Password</button>
+          </form>
+        </div>
+
         <div className={styles.settingsSection}>
           <h2 className={styles.settingsTitle}>Problem Statements Management</h2>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
