@@ -2,6 +2,9 @@
   padding: 4rem 1rem;
   background-color: var(--bg-color);
   min-height: calc(100vh - 80px);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
 }
 
 .loginCard {
@@ -9,8 +12,8 @@
   padding: 2rem;
   border-radius: 8px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  width: 100%;
   max-width: 400px;
-  margin: 0 auto;
   border-top: 4px solid var(--primary-blue);
 }
 

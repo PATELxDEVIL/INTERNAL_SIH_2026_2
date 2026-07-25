@@ -95,7 +95,7 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className={styles.container} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <div className={styles.container}>
       <div className={styles.loginCard}>
 
         {/* ── LOGIN ── */}
