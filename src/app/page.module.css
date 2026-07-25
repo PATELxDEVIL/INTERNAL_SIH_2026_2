@@ -55,12 +55,22 @@
 }
 
 .heroTitle {
-  font-size: 4.5rem;
+  font-size: 4rem;
   font-weight: 800;
   margin-bottom: 1rem;
-  color: var(--white);
-  text-shadow: 0 4px 20px rgba(0,0,0,0.5);
-  animation: fadeIn 1s ease-out;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3); /* Need a shadow since gradient is transparent */
+  /* Re-evaluating: transparent gradient with shadow is tricky. Let's use a solid white title with a gradient background box, or just gradient text if background is light. 
+     Wait, hero overlay is dark. Gradient text won't pop as much as white. Let's stick to gradient text but with white text-shadow for pop, or vice versa. 
+     Actually, let's use White text with a gradient underline for the hero, or follow instructions:
+     "INTERNAL SIH 2026" — large, bold, gradient text (red → blue) */
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  /* Add drop shadow to the gradient text via filter */
+  filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.5));
 }
 
 .heroTagline {
@@ -97,19 +107,16 @@
 }
 
 .countdownSection {
+  background-color: var(--white);
   text-align: center;
-  padding: 3rem;
-  margin: -4rem auto 3rem auto;
+  padding: 2rem;
+  margin: 2rem auto;
   position: relative;
   z-index: 10;
-  max-width: 900px;
-  background: var(--glass-bg);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--glass-border);
-  border-radius: 20px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-  animation: float 6s ease-in-out infinite;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  max-width: 800px;
+  border-top: 4px solid var(--primary-red);
 }
 
 .countdownTimer {
@@ -117,33 +124,22 @@
   justify-content: center;
   gap: 2rem;
   margin: 2rem 0;
-  font-size: 3rem;
-  font-weight: 800;
-  background: var(--gradient-glow);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-size: 200% auto;
-  animation: glowBorder 4s linear infinite;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--primary-blue);
 }
 
 .countdownBox {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
-  padding: 1rem;
-  min-width: 100px;
-  border: 1px solid rgba(255,255,255,0.1);
 }
 
 .countdownLabel {
   font-size: 0.875rem;
-  color: var(--text-light);
+  color: var(--text-dark);
   text-transform: uppercase;
-  letter-spacing: 2px;
-  margin-top: 0.5rem;
-  -webkit-text-fill-color: var(--text-light);
+  letter-spacing: 1px;
 }
 
 .ctaSection {
@@ -160,51 +156,31 @@
 
 /* Accordion */
 .accordionItem {
-  margin-bottom: 1.5rem;
-  border: 1px solid var(--glass-border);
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(10px);
+  margin-bottom: 1rem;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  background: var(--white);
   overflow: hidden;
-  transition: all 0.3s ease;
-}
-
-.accordionItem:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .accordionHeader {
   width: 100%;
-  padding: 1.5rem;
+  padding: 1rem 1.5rem;
   text-align: left;
   background: none;
   border: none;
-  font-size: 1.2rem;
+  font-size: 1.125rem;
   font-weight: 600;
-  color: var(--text-light);
+  color: var(--primary-blue);
   cursor: pointer;
   display: flex;
   justify-content: space-between;
-  align-items: center;
-}
-
-.accordionHeader span {
-  background: var(--glass-bg);
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  border: 1px solid var(--glass-border);
 }
 
 .accordionContent {
   padding: 0 1.5rem 1.5rem;
-  color: #CBD5E1;
-  border-top: 1px solid rgba(255,255,255,0.05);
-  line-height: 1.8;
+  color: var(--text-dark);
+  border-top: 1px solid #eee;
 }
 
 /* Clubs Grid */
@@ -216,20 +192,11 @@
 }
 
 .clubCard {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(12px);
-  padding: 2rem;
-  border-radius: 16px;
-  border: 1px solid var(--glass-border);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  background: var(--white);
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
   position: relative;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.clubCard:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 40px rgba(0,0,0,0.4);
-  border-color: rgba(255,255,255,0.2);
 }
 
 .clubCard::before {
@@ -239,33 +206,23 @@
   left: 0;
   right: 0;
   height: 4px;
-  background: var(--gradient-glow);
-  border-top-left-radius: 16px;
-  border-top-right-radius: 16px;
+  background: var(--gradient-primary);
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
 }
 
 .clubName {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 700;
   margin-bottom: 1rem;
-  color: var(--text-light);
-}
-
-.clubCard p {
-  color: #94A3B8;
-  margin-bottom: 0.5rem;
-}
-.clubCard p strong {
-  color: #E2E8F0;
+  color: var(--primary-blue);
 }
 
 .footer {
-  background: rgba(15, 23, 42, 0.8);
-  backdrop-filter: blur(20px);
-  border-top: 1px solid var(--glass-border);
+  background: #111827; /* Darker more premium slate */
   color: var(--white);
-  padding: 4rem 0 1.5rem 0;
-  margin-top: 4rem;
+  padding: 3rem 0 1rem 0;
+  border-top: 4px solid var(--primary-red);
 }
 
 .footerContent {

@@ -1,24 +1,11 @@
 :root {
-  /* Core SIH Brand Colors but vibrant */
-  --primary-red: #E63946;
-  --primary-blue: #1D3557;
-  --primary-blue-light: #457B9D;
-  --accent-cyan: #A8DADC;
-  --accent-gold: #F4A261;
-  --bg-color: #0F172A; /* Dark space background */
-  --text-dark: #1E293B;
-  --text-light: #F8FAFC;
+  --primary-red: #C1272D;
+  --primary-blue: #1B3F8B;
+  --accent-gold: #F6A000; /* Approximate from description */
+  --bg-color: #F7F8FB;
+  --text-dark: #1E1E2A;
   --white: #FFFFFF;
-  
-  /* Gradients */
-  --gradient-primary: linear-gradient(135deg, #E63946, #1D3557);
-  --gradient-glow: linear-gradient(45deg, #FF6B6B, #4ECDC4, #45B7D1, #FF6B6B);
-  
-  /* Glassmorphism Tokens */
-  --glass-bg: rgba(255, 255, 255, 0.05);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-  
+  --gradient-primary: linear-gradient(135deg, var(--primary-red), var(--primary-blue));
   --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
@@ -34,22 +21,14 @@ html {
 
 body {
   background-color: var(--bg-color);
-  background-image: 
-    radial-gradient(at 0% 0%, rgba(29, 53, 87, 0.4) 0px, transparent 50%),
-    radial-gradient(at 100% 0%, rgba(230, 57, 70, 0.2) 0px, transparent 50%),
-    radial-gradient(at 100% 100%, rgba(69, 123, 157, 0.3) 0px, transparent 50%),
-    radial-gradient(at 0% 100%, rgba(29, 53, 87, 0.4) 0px, transparent 50%);
-  background-attachment: fixed;
-  color: var(--text-light);
+  color: var(--text-dark);
   font-family: var(--font-sans);
   line-height: 1.6;
-  min-height: 100vh;
 }
 
 a {
   text-decoration: none;
   color: inherit;
-  transition: color 0.3s ease;
 }
 
 ul {
@@ -61,96 +40,40 @@ button {
   font-family: inherit;
 }
 
-/* Animations */
-@keyframes glowBorder {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-@keyframes float {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-  100% { transform: translateY(0px); }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
 /* Global utility classes */
 .btn-primary {
   background: var(--gradient-primary);
   color: var(--white);
   border: none;
   padding: 0.75rem 1.5rem;
-  border-radius: 8px;
+  border-radius: 4px;
   font-weight: 600;
-  letter-spacing: 0.05em;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition: opacity 0.3s ease;
   display: inline-block;
-  box-shadow: 0 4px 15px rgba(230, 57, 70, 0.3);
-  position: relative;
-  overflow: hidden;
-}
-
-.btn-primary::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-  transition: all 0.5s ease;
 }
 
 .btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(230, 57, 70, 0.5);
-}
-
-.btn-primary:hover::after {
-  left: 100%;
+  opacity: 0.9;
 }
 
 .btn-primary:disabled {
-  background: #334155;
-  color: #94A3B8;
-  box-shadow: none;
+  background: #ccc;
   cursor: not-allowed;
-  transform: none;
-}
-
-.btn-primary:disabled::after {
-  display: none;
+  opacity: 1;
 }
 
 .section-title {
-  font-size: 2.5rem;
-  font-weight: 800;
-  margin-bottom: 2rem;
-  background: linear-gradient(135deg, #FFFFFF 0%, #A8DADC 100%);
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  background: var(--gradient-primary);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   display: inline-block;
-  text-align: center;
-  width: 100%;
 }
 
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 1.5rem;
-}
-
-/* Glass Card Utility */
-.glass-card {
-  background: var(--glass-bg);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--glass-border);
-  border-radius: 16px;
-  box-shadow: var(--glass-shadow);
+  padding: 0 1rem;
 }
