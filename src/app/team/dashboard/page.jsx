@@ -261,46 +261,75 @@ export default function TeamDashboard() {
           <h2 className={styles.sectionTitle}>3. Manage Team Members</h2>
           <p style={{ fontSize: '0.9rem', color: '#666', marginBottom: '1rem' }}>The Team Leader cannot be changed. You can edit the details of other members.</p>
           
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem', border: '1px solid #eee' }}>
+          <div className={styles.tableContainer}>
+            <table className={styles.modernTable}>
               <thead>
-                <tr style={{ background: '#f5f5f5', textAlign: 'left', borderBottom: '2px solid #ddd' }}>
-                  <th style={{ padding: '0.75rem', borderRight: '1px solid #eee' }}>Role</th>
-                  <th style={{ padding: '0.75rem', borderRight: '1px solid #eee' }}>Name</th>
-                  <th style={{ padding: '0.75rem', borderRight: '1px solid #eee' }}>Email</th>
-                  <th style={{ padding: '0.75rem', borderRight: '1px solid #eee' }}>Phone</th>
-                  <th style={{ padding: '0.75rem', borderRight: '1px solid #eee' }}>Enrollment</th>
-                  <th style={{ padding: '0.75rem', borderRight: '1px solid #eee' }}>Dept / Sem</th>
-                  <th style={{ padding: '0.75rem' }}>Action</th>
+                <tr>
+                  <th>Team Member</th>
+                  <th>Enrollment</th>
+                  <th>Role</th>
+                  <th>Phone</th>
+                  <th>Department</th>
+                  <th style={{ textAlign: 'center' }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {/* Leader Row */}
-                <tr style={{ borderBottom: '1px solid #eee', background: '#fafafa' }}>
-                  <td style={{ padding: '0.75rem', fontWeight: 'bold', color: 'var(--primary-blue)', borderRight: '1px solid #eee' }}>👑 Team Leader</td>
-                  <td style={{ padding: '0.75rem', fontWeight: 'bold', borderRight: '1px solid #eee' }}>{team.leader.name}</td>
-                  <td style={{ padding: '0.75rem', borderRight: '1px solid #eee' }}>{team.leader.email}</td>
-                  <td style={{ padding: '0.75rem', borderRight: '1px solid #eee' }}>{team.leader.phone}</td>
-                  <td style={{ padding: '0.75rem', borderRight: '1px solid #eee' }}>{team.leader.enrollment}</td>
-                  <td style={{ padding: '0.75rem', borderRight: '1px solid #eee' }}>{team.leader.department} <br/> <small>Sem {team.leader.semester}</small></td>
-                  <td style={{ padding: '0.75rem', color: '#999', fontStyle: 'italic' }}>Cannot Edit</td>
+                <tr>
+                  <td>
+                    <div className={styles.avatarRow}>
+                      <div className={styles.avatar}>{team.leader.name.charAt(0).toUpperCase()}</div>
+                      <div>
+                        <span className={styles.nameText}>{team.leader.name}</span>
+                        <span className={styles.subText}>{team.leader.email}</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td>{team.leader.enrollment}</td>
+                  <td>
+                    <span className={`${styles.badge} ${styles.badgeLeader}`}>Team Leader</span>
+                  </td>
+                  <td>{team.leader.phone}</td>
+                  <td>
+                    <span style={{ display: 'block' }}>{team.leader.department}</span>
+                    <span className={styles.subText}>Semester {team.leader.semester}</span>
+                  </td>
+                  <td style={{ textAlign: 'center' }}>
+                    <span className={styles.subText} style={{ fontStyle: 'italic' }}>-</span>
+                  </td>
                 </tr>
+
                 {/* Member Rows */}
                 {team.members.map((m, i) => (
-                  <tr key={m.id} style={{ borderBottom: '1px solid #eee' }}>
-                    <td style={{ padding: '0.75rem', borderRight: '1px solid #eee' }}>Team Member</td>
-                    <td style={{ padding: '0.75rem', borderRight: '1px solid #eee' }}>{m.name}</td>
-                    <td style={{ padding: '0.75rem', borderRight: '1px solid #eee' }}>{m.email}</td>
-                    <td style={{ padding: '0.75rem', borderRight: '1px solid #eee' }}>{m.phone}</td>
-                    <td style={{ padding: '0.75rem', borderRight: '1px solid #eee' }}>{m.enrollment}</td>
-                    <td style={{ padding: '0.75rem', borderRight: '1px solid #eee' }}>{m.department} <br/> <small>Sem {m.semester}</small></td>
-                    <td style={{ padding: '0.75rem' }}>
+                  <tr key={m.id}>
+                    <td>
+                      <div className={styles.avatarRow}>
+                        <div className={styles.avatar}>{m.name.charAt(0).toUpperCase()}</div>
+                        <div>
+                          <span className={styles.nameText}>{m.name}</span>
+                          <span className={styles.subText}>{m.email}</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td>{m.enrollment}</td>
+                    <td>
+                      <span className={`${styles.badge} ${styles.badgeMember}`}>Member</span>
+                    </td>
+                    <td>{m.phone}</td>
+                    <td>
+                      <span style={{ display: 'block' }}>{m.department}</span>
+                      <span className={styles.subText}>Semester {m.semester}</span>
+                    </td>
+                    <td style={{ textAlign: 'center' }}>
                       <button 
                         onClick={() => setEditingMember(m)}
-                        className={styles.btnSecondary}
-                        style={{ padding: '0.25rem 0.5rem', fontSize: '0.8rem' }}
+                        className={styles.iconBtn}
+                        title="Edit Member"
                       >
-                        Edit
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M12 20h9"></path>
+                          <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                        </svg>
                       </button>
                     </td>
                   </tr>
