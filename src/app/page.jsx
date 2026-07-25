@@ -42,14 +42,14 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    const timer = setInterval(() => {
+    const updateTimer = () => {
       const now = new Date().getTime();
       const distance = deadline - now;
 
       if (distance < 0) {
-        clearInterval(timer);
         setIsClosed(true);
       } else {
+        setIsClosed(false);
         setTimeLeft({
           days: Math.floor(distance / (1000 * 60 * 60 * 24)),
           hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
@@ -57,7 +57,11 @@ export default function Home() {
           seconds: Math.floor((distance % (1000 * 60)) / 1000)
         });
       }
-    }, 1000);
+    };
+
+    updateTimer(); // Call immediately so it doesn't wait 1s for the first tick
+    const timer = setInterval(updateTimer, 1000);
+    
     return () => clearInterval(timer);
   }, [deadline]);
 
