@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from 'react';
+import { openPdfInNewTab } from '@/lib/pdfHelper';
 import styles from './page.module.css';
 
 export default function ProblemsPage() {
@@ -48,9 +49,9 @@ export default function ProblemsPage() {
               <div className={styles.problemContent}>
                 <p className={styles.problemDesc}>{problem.description}</p>
                 {problem.pdfUrl && (
-                  <a href={problem.pdfUrl} download={`${problem.title.replace(/\s+/g, '_')}_Statement.pdf`} className={styles.pdfLink}>
+                  <button onClick={() => openPdfInNewTab(problem.pdfUrl, problem.title)} className={styles.pdfLink} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontFamily: 'inherit', fontSize: 'inherit' }}>
                     📄 View Reference PDF
-                  </a>
+                  </button>
                 )}
               </div>
             </div>
