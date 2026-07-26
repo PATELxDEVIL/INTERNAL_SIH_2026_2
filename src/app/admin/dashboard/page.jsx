@@ -378,7 +378,7 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        <div style={{ overflowX: 'auto' }}>
+        <div style={{ overflowX: 'auto', overflowY: 'auto', maxHeight: '500px' }}>
           <table className={styles.modernTable}>
             <thead>
               <tr>

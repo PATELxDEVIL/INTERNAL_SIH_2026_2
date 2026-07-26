@@ -4,7 +4,7 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
-:root {
+:global(:root) {
   --sidebar-bg: #0f1117;
   --sidebar-bg2: #161b27;
   --sidebar-width: 240px;
@@ -317,6 +317,7 @@
 .adminMain {
   margin-left: var(--sidebar-width);
   flex: 1;
+  min-width: 0;
   background: var(--admin-main-bg);
   min-height: 100vh;
   transition: margin-left 0.28s cubic-bezier(0.4, 0, 0.2, 1);
@@ -571,6 +572,10 @@
   font-weight: 700;
   letter-spacing: 0.07em;
   white-space: nowrap;
+  position: sticky;
+  top: 0;
+  background: #f8fafc;
+  z-index: 10;
 }
 
 .modernTable tbody tr {
