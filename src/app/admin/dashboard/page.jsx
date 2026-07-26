@@ -18,6 +18,8 @@ export default function AdminDashboard() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('All Statuses');
   const [selectedTeam, setSelectedTeam] = useState(null);
+  const [editingMember, setEditingMember] = useState(null);
+  const [memberMsg, setMemberMsg] = useState({ type: '', text: '' });
 
   useEffect(() => {
     const session = localStorage.getItem('adminSession');
@@ -157,6 +159,28 @@ export default function AdminDashboard() {
       }
     } catch {
       alert("Error deleting team");
+    }
+  };
+
+  const handleSaveMember = async (e) => {
+    e.preventDefault();
+    setMemberMsg({ type: '', text: '' });
+    try {
+      const res = await fetch('/api/team/member', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ teamId: selectedTeam.teamId, member: editingMember })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setMemberMsg({ type: 'error', text: data.error });
+      } else {
+        setSelectedTeam(data.team);
+        setTeams(teams.map(t => t.teamId === data.team.teamId ? data.team : t));
+        setEditingMember(null);
+      }
+    } catch (err) {
+      setMemberMsg({ type: 'error', text: 'Failed to update member.' });
     }
   };
 
@@ -939,9 +963,11 @@ export default function AdminDashboard() {
                   <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0' }}>
                     <th style={{ padding: '0.625rem 0.875rem', textAlign: 'left', fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', color: '#94a3b8', letterSpacing: '0.06em' }}>Role</th>
                     <th style={{ padding: '0.625rem 0.875rem', textAlign: 'left', fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', color: '#94a3b8', letterSpacing: '0.06em' }}>Name</th>
+                    <th style={{ padding: '0.625rem 0.875rem', textAlign: 'left', fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', color: '#94a3b8', letterSpacing: '0.06em' }}>Contact</th>
                     <th style={{ padding: '0.625rem 0.875rem', textAlign: 'left', fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', color: '#94a3b8', letterSpacing: '0.06em' }}>Gender</th>
                     <th style={{ padding: '0.625rem 0.875rem', textAlign: 'left', fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', color: '#94a3b8', letterSpacing: '0.06em' }}>Enrollment</th>
                     <th style={{ padding: '0.625rem 0.875rem', textAlign: 'left', fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', color: '#94a3b8', letterSpacing: '0.06em' }}>Dept / Sem</th>
+                    <th style={{ padding: '0.625rem 0.875rem', textAlign: 'center', fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', color: '#94a3b8', letterSpacing: '0.06em' }}>Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -952,9 +978,23 @@ export default function AdminDashboard() {
                       </span>
                     </td>
                     <td style={{ padding: '0.75rem 0.875rem', borderBottom: '1px solid #f1f5f9', fontWeight: 700, color: '#0f172a' }}>{selectedTeam.leader.name}</td>
+                    <td style={{ padding: '0.75rem 0.875rem', borderBottom: '1px solid #f1f5f9', color: '#64748b', fontSize: '0.75rem' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <span>{selectedTeam.leader.email}</span>
+                        <span>{selectedTeam.leader.phone}</span>
+                      </div>
+                    </td>
                     <td style={{ padding: '0.75rem 0.875rem', borderBottom: '1px solid #f1f5f9', color: '#64748b' }}>{selectedTeam.leader.gender}</td>
                     <td style={{ padding: '0.75rem 0.875rem', borderBottom: '1px solid #f1f5f9', color: '#64748b', fontFamily: 'monospace' }}>{selectedTeam.leader.enrollment}</td>
                     <td style={{ padding: '0.75rem 0.875rem', borderBottom: '1px solid #f1f5f9', color: '#64748b' }}>{selectedTeam.leader.department}, Sem {selectedTeam.leader.semester}</td>
+                    <td style={{ padding: '0.75rem 0.875rem', borderBottom: '1px solid #f1f5f9', textAlign: 'center' }}>
+                      <button onClick={() => setEditingMember(selectedTeam.leader)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#1B3F8B' }} title="Edit">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M12 20h9"></path>
+                          <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                        </svg>
+                      </button>
+                    </td>
                   </tr>
                   {selectedTeam.members.map((m, i) => (
                     <tr key={m.id}>
@@ -964,9 +1004,23 @@ export default function AdminDashboard() {
                         </span>
                       </td>
                       <td style={{ padding: '0.75rem 0.875rem', borderBottom: '1px solid #f1f5f9', fontWeight: 500, color: '#1e293b' }}>{m.name}</td>
+                      <td style={{ padding: '0.75rem 0.875rem', borderBottom: '1px solid #f1f5f9', color: '#64748b', fontSize: '0.75rem' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                          <span>{m.email}</span>
+                          <span>{m.phone}</span>
+                        </div>
+                      </td>
                       <td style={{ padding: '0.75rem 0.875rem', borderBottom: '1px solid #f1f5f9', color: '#64748b' }}>{m.gender}</td>
                       <td style={{ padding: '0.75rem 0.875rem', borderBottom: '1px solid #f1f5f9', color: '#64748b', fontFamily: 'monospace' }}>{m.enrollment}</td>
                       <td style={{ padding: '0.75rem 0.875rem', borderBottom: '1px solid #f1f5f9', color: '#64748b' }}>{m.department}, Sem {m.semester}</td>
+                      <td style={{ padding: '0.75rem 0.875rem', borderBottom: '1px solid #f1f5f9', textAlign: 'center' }}>
+                        <button onClick={() => setEditingMember(m)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#1B3F8B' }} title="Edit">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M12 20h9"></path>
+                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                          </svg>
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -990,6 +1044,69 @@ export default function AdminDashboard() {
                 Close
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── EDIT MEMBER MODAL ── */}
+      {editingMember && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 3000, padding: '1rem' }}>
+          <div style={{ background: '#fff', borderRadius: '8px', padding: '2rem', width: '100%', maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto' }}>
+            <h2 style={{ marginBottom: '1.5rem', color: '#1B3F8B' }}>Edit Member Details</h2>
+            {memberMsg.text && (
+              <div style={{ padding: '0.75rem', marginBottom: '1rem', borderRadius: '4px', background: memberMsg.type === 'error' ? '#fee2e2' : '#dcfce3', color: memberMsg.type === 'error' ? '#b91c1c' : '#166534' }}>
+                {memberMsg.text}
+              </div>
+            )}
+            <form onSubmit={handleSaveMember}>
+              <div className={styles.row}>
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Full Name</label>
+                  <input className={styles.input} required value={editingMember.name} onChange={e => setEditingMember({...editingMember, name: e.target.value})} />
+                </div>
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Email</label>
+                  <input type="email" className={styles.input} required value={editingMember.email} onChange={e => setEditingMember({...editingMember, email: e.target.value})} />
+                </div>
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Phone</label>
+                  <input className={styles.input} required maxLength="10" value={editingMember.phone} onChange={e => setEditingMember({...editingMember, phone: e.target.value.replace(/\D/g, '')})} />
+                </div>
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Enrollment</label>
+                  <input className={styles.input} required value={editingMember.enrollment} onChange={e => setEditingMember({...editingMember, enrollment: e.target.value})} />
+                </div>
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Semester</label>
+                  <select className={styles.select} required value={editingMember.semester} onChange={e => setEditingMember({...editingMember, semester: e.target.value})}>
+                    <option value="">Select</option>
+                    {[1,2,3,4,5,6,7,8].map(s => <option key={s} value={s}>Semester {s}</option>)}
+                  </select>
+                </div>
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Gender</label>
+                  <select className={styles.select} required value={editingMember.gender} onChange={e => setEditingMember({...editingMember, gender: e.target.value})}>
+                    <option value="">Select</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Department</label>
+                  <select className={styles.select} required value={editingMember.department} onChange={e => setEditingMember({...editingMember, department: e.target.value})}>
+                    <option value="">Select</option>
+                    <option value="Computer Engineering">Computer Engineering</option>
+                    <option value="Computer Science and Engineering">Computer Science and Engineering</option>
+                    <option value="Information Technology">Information Technology</option>
+                  </select>
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+                <button type="submit" className="btn-primary">Save Changes</button>
+                <button type="button" onClick={() => setEditingMember(null)} style={{ padding: '0.75rem 1.5rem', background: '#eee', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: '600' }}>Cancel</button>
+              </div>
+            </form>
           </div>
         </div>
       )}
