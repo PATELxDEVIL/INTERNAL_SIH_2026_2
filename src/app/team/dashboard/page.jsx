@@ -298,6 +298,7 @@ export default function TeamDashboard() {
               <thead>
                 <tr>
                   <th>Team Member</th>
+                  <th>Gender</th>
                   <th>Enrollment</th>
                   <th>Role</th>
                   <th>Phone</th>
@@ -317,6 +318,7 @@ export default function TeamDashboard() {
                       </div>
                     </div>
                   </td>
+                  <td>{team.leader.gender}</td>
                   <td>{team.leader.enrollment}</td>
                   <td>
                     <span className={`${styles.badge} ${styles.badgeLeader}`}>Team Leader</span>
@@ -343,6 +345,7 @@ export default function TeamDashboard() {
                         </div>
                       </div>
                     </td>
+                    <td>{m.gender}</td>
                     <td>{m.enrollment}</td>
                     <td>
                       <span className={`${styles.badge} ${styles.badgeMember}`}>Member</span>

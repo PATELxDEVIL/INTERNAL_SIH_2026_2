@@ -939,6 +939,7 @@ export default function AdminDashboard() {
                   <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0' }}>
                     <th style={{ padding: '0.625rem 0.875rem', textAlign: 'left', fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', color: '#94a3b8', letterSpacing: '0.06em' }}>Role</th>
                     <th style={{ padding: '0.625rem 0.875rem', textAlign: 'left', fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', color: '#94a3b8', letterSpacing: '0.06em' }}>Name</th>
+                    <th style={{ padding: '0.625rem 0.875rem', textAlign: 'left', fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', color: '#94a3b8', letterSpacing: '0.06em' }}>Gender</th>
                     <th style={{ padding: '0.625rem 0.875rem', textAlign: 'left', fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', color: '#94a3b8', letterSpacing: '0.06em' }}>Enrollment</th>
                     <th style={{ padding: '0.625rem 0.875rem', textAlign: 'left', fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', color: '#94a3b8', letterSpacing: '0.06em' }}>Dept / Sem</th>
                   </tr>
@@ -951,6 +952,7 @@ export default function AdminDashboard() {
                       </span>
                     </td>
                     <td style={{ padding: '0.75rem 0.875rem', borderBottom: '1px solid #f1f5f9', fontWeight: 700, color: '#0f172a' }}>{selectedTeam.leader.name}</td>
+                    <td style={{ padding: '0.75rem 0.875rem', borderBottom: '1px solid #f1f5f9', color: '#64748b' }}>{selectedTeam.leader.gender}</td>
                     <td style={{ padding: '0.75rem 0.875rem', borderBottom: '1px solid #f1f5f9', color: '#64748b', fontFamily: 'monospace' }}>{selectedTeam.leader.enrollment}</td>
                     <td style={{ padding: '0.75rem 0.875rem', borderBottom: '1px solid #f1f5f9', color: '#64748b' }}>{selectedTeam.leader.department}, Sem {selectedTeam.leader.semester}</td>
                   </tr>
@@ -962,6 +964,7 @@ export default function AdminDashboard() {
                         </span>
                       </td>
                       <td style={{ padding: '0.75rem 0.875rem', borderBottom: '1px solid #f1f5f9', fontWeight: 500, color: '#1e293b' }}>{m.name}</td>
+                      <td style={{ padding: '0.75rem 0.875rem', borderBottom: '1px solid #f1f5f9', color: '#64748b' }}>{m.gender}</td>
                       <td style={{ padding: '0.75rem 0.875rem', borderBottom: '1px solid #f1f5f9', color: '#64748b', fontFamily: 'monospace' }}>{m.enrollment}</td>
                       <td style={{ padding: '0.75rem 0.875rem', borderBottom: '1px solid #f1f5f9', color: '#64748b' }}>{m.department}, Sem {m.semester}</td>
                     </tr>
