@@ -143,7 +143,9 @@ export default function Home() {
         ) : (
           <>
             {isClosed ? (
-              <h2 style={{ color: 'var(--primary-red)' }}>Registrations Closed</h2>
+              <h2 style={{ color: 'var(--primary-red)' }}>
+                {config.registrationButtonLink?.toLowerCase().includes('login') ? 'Login Closed' : 'Registrations Closed'}
+              </h2>
             ) : (
               <>
                 <h2>{config.registrationHeading || "Registration Closes In"}</h2>
@@ -175,8 +177,13 @@ export default function Home() {
               <button 
                 className="btn-primary" 
                 disabled={isClosed}
-                title={isClosed ? "Registrations are now closed" : ""}
-                onClick={() => !isClosed && (window.location.href = config.registrationButtonLink || '/register')}
+                title={isClosed ? (config.registrationButtonLink?.toLowerCase().includes('login') ? "Login is now closed" : "Registrations are now closed") : ""}
+                onClick={() => {
+                  if (!isClosed) {
+                    const link = config.registrationButtonLink || '/register';
+                    window.location.href = link.startsWith('/') || link.startsWith('http') ? link : '/' + link;
+                  }
+                }}
                 style={{ fontSize: '1.25rem', padding: '1rem 2rem' }}
               >
                 {config.registrationButtonText || "Register Your Team"}
