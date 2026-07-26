@@ -95,7 +95,7 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className={styles.container}>
+    <div className={styles.loginContainer}>
       <div className={styles.loginCard}>
 
         {/* ── LOGIN ── */}
