@@ -338,7 +338,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* ── TEAMS TABLE ── */}
-      <div className={styles.modernTableContainer}>
+      <div id="teams" className={styles.modernTableContainer}>
         <div className={styles.modernTableHeader}>
           <div className={styles.modernTableHeaderLeft}>
             <div className={styles.modernHeaderIcon}>
@@ -481,7 +481,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Section divider */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', margin: '2rem 0 1.5rem' }}>
+      <div id="settings" style={{ display: 'flex', alignItems: 'center', gap: '1rem', margin: '2rem 0 1.5rem' }}>
         <div style={{ flex: 1, height: '1px', background: '#e2e8f0' }}></div>
         <span style={{
           fontSize: '0.7rem', fontWeight: 700, color: '#94a3b8',
@@ -589,7 +589,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Section divider */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', margin: '0.5rem 0 1.5rem' }}>
+      <div id="problems" style={{ display: 'flex', alignItems: 'center', gap: '1rem', margin: '0.5rem 0 1.5rem' }}>
         <div style={{ flex: 1, height: '1px', background: '#e2e8f0' }}></div>
         <span style={{
           fontSize: '0.7rem', fontWeight: 700, color: '#94a3b8',
