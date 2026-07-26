@@ -124,16 +124,6 @@ function AdminSidebar({ collapsed, setCollapsed, onLogout }) {
 
       {/* Footer */}
       <div className={styles.sidebarFooter}>
-        <div className={styles.adminUser}>
-          <div className={styles.adminAvatar}>A</div>
-          {!collapsed && (
-            <div className={styles.adminUserInfo}>
-              <div className={styles.adminUserName}>Super Admin</div>
-              <div className={styles.adminUserRole}>Administrator</div>
-            </div>
-          )}
-        </div>
-
         <button
           onClick={onLogout}
           title="Logout"
