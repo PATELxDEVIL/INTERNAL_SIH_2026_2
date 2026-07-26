@@ -1,5 +1,5 @@
 "use client";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import styles from './admin.module.css';
@@ -55,12 +55,20 @@ const NAV_ITEMS = [
 
 function AdminSidebar({ collapsed, setCollapsed, onLogout }) {
   const pathname = usePathname();
+  const [activeHash, setActiveHash] = useState('');
+
+  useEffect(() => {
+    setActiveHash(window.location.hash);
+    const handleHashChange = () => setActiveHash(window.location.hash);
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
 
   return (
     <aside className={`${styles.sidebar} ${collapsed ? styles.sidebarCollapsed : ''}`}>
       {/* Brand */}
       <div className={styles.sidebarBrand}>
-        <div className={styles.brandLogo}>S</div>
+        {!collapsed && <div className={styles.brandLogo}>S</div>}
 
         {!collapsed && (
           <div className={styles.brandText}>
@@ -73,6 +81,7 @@ function AdminSidebar({ collapsed, setCollapsed, onLogout }) {
           onClick={() => setCollapsed(!collapsed)}
           title={collapsed ? 'Expand' : 'Collapse'}
           className={styles.collapseBtn}
+          style={collapsed ? { margin: '0 auto' } : {}}
         >
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
             {collapsed
@@ -86,13 +95,25 @@ function AdminSidebar({ collapsed, setCollapsed, onLogout }) {
       {/* Nav */}
       <nav className={styles.sidebarNav}>
         {NAV_ITEMS.map(item => {
-          const isActive = pathname === item.href;
+          const itemPath = item.href.split('#')[0];
+          const itemHash = item.href.includes('#') ? '#' + item.href.split('#')[1] : '';
+          
+          let isActive = false;
+          if (pathname === itemPath) {
+            if (activeHash === itemHash) {
+              isActive = true;
+            } else if (!activeHash && !itemHash) {
+              isActive = true;
+            }
+          }
+
           return (
             <Link
               key={item.href}
               href={item.href}
               title={collapsed ? item.label : ''}
               className={`${styles.navItem} ${isActive ? styles.navItemActive : ''}`}
+              onClick={() => setActiveHash(itemHash)}
             >
               <span className={styles.navIcon}>{item.icon}</span>
               {!collapsed && <span className={styles.navLabel}>{item.label}</span>}
