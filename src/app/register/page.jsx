@@ -18,7 +18,7 @@ export default function Register() {
     fetch('/api/admin/config')
       .then(res => res.json())
       .then(data => {
-        if (data && data.deadline) {
+        if (data && (!data.registrationButtonLink || data.registrationButtonLink === '/register') && data.deadline) {
           const deadlineTime = new Date(data.deadline).getTime();
           if (new Date().getTime() > deadlineTime) {
             setIsClosed(true);

@@ -1,5 +1,5 @@
 "use client";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from '../team.module.css';
 
@@ -9,6 +9,23 @@ export default function TeamLogin() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isClosed, setIsClosed] = useState(false);
+  const [loadingConfig, setLoadingConfig] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/admin/config')
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.registrationButtonLink === '/team/login' && data.deadline) {
+          const deadlineTime = new Date(data.deadline).getTime();
+          if (new Date().getTime() > deadlineTime) {
+            setIsClosed(true);
+          }
+        }
+      })
+      .catch(console.error)
+      .finally(() => setLoadingConfig(false));
+  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -42,9 +59,18 @@ export default function TeamLogin() {
       <div className={styles.card}>
         <h1 className={styles.title}>Team Login</h1>
         
-        {error && <div className={styles.error}>{error}</div>}
+        {loadingConfig ? (
+          <h2 style={{ textAlign: 'center', margin: '2rem 0', color: '#64748b' }}>Loading...</h2>
+        ) : isClosed ? (
+          <div style={{ textAlign: 'center', margin: '3rem 0' }}>
+            <h2 style={{ color: 'var(--primary-red)', marginBottom: '1rem' }}>Login Closed</h2>
+            <p style={{ color: '#64748b' }}>The time window for team login has ended.</p>
+          </div>
+        ) : (
+          <>
+            {error && <div className={styles.error}>{error}</div>}
 
-        <form onSubmit={handleLogin}>
+            <form onSubmit={handleLogin}>
           <div className={styles.formGroup}>
             <label className={styles.label}>Team ID</label>
             <input 
@@ -76,6 +102,8 @@ export default function TeamLogin() {
             {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
+          </>
+        )}
       </div>
     </div>
   );

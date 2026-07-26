@@ -1,10 +1,17 @@
 import { NextResponse } from 'next/server';
-import { getTeamById } from '@/lib/db';
+import { getTeamById, getConfig } from '@/lib/db';
 import bcrypt from 'bcryptjs';
 
 export async function POST(req) {
   try {
     const { teamId, password } = await req.json();
+
+    const config = await getConfig();
+    if (config && config.registrationButtonLink === '/team/login' && config.deadline) {
+      if (new Date().getTime() > new Date(config.deadline).getTime()) {
+        return NextResponse.json({ error: "Login window has closed." }, { status: 403 });
+      }
+    }
 
     if (!teamId || !password) {
       return NextResponse.json({ error: "Team ID and password are required" }, { status: 400 });

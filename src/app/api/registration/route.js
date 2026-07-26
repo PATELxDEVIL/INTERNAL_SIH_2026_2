@@ -18,9 +18,9 @@ export async function POST(req) {
     const data = await req.json();
     const { teamName, leader, members } = data;
 
-    // Check if deadline has passed
+    // Check if deadline has passed for registration
     const config = await getConfig();
-    if (config && config.deadline) {
+    if (config && (!config.registrationButtonLink || config.registrationButtonLink === '/register') && config.deadline) {
       if (new Date().getTime() > new Date(config.deadline).getTime()) {
         return NextResponse.json({ error: "Registration is closed. The deadline has passed." }, { status: 403 });
       }
