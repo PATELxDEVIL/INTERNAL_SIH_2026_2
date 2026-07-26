@@ -140,47 +140,51 @@ export default function Home() {
           <div style={{ minHeight: '280px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', opacity: 0.6 }}>
             <p style={{ fontSize: '1.25rem', fontWeight: 600, color: 'var(--text-dark)' }}>Loading Timer...</p>
           </div>
-        ) : isClosed ? (
-          <h2 style={{ color: 'var(--primary-red)' }}>Registrations Closed</h2>
         ) : (
           <>
-            <h2>{config.registrationHeading || "Registration Closes In"}</h2>
-            <div className={styles.countdownTimer}>
-              <div className={styles.countdownBox}>
-                <span>{String(timeLeft.days).padStart(2, '0')}</span>
-                <span className={styles.countdownLabel}>Days</span>
-              </div>
-              <span>:</span>
-              <div className={styles.countdownBox}>
-                <span>{String(timeLeft.hours).padStart(2, '0')}</span>
-                <span className={styles.countdownLabel}>Hours</span>
-              </div>
-              <span>:</span>
-              <div className={styles.countdownBox}>
-                <span>{String(timeLeft.minutes).padStart(2, '0')}</span>
-                <span className={styles.countdownLabel}>Minutes</span>
-              </div>
-              <span>:</span>
-              <div className={styles.countdownBox}>
-                <span>{String(timeLeft.seconds).padStart(2, '0')}</span>
-                <span className={styles.countdownLabel}>Seconds</span>
-              </div>
+            {isClosed ? (
+              <h2 style={{ color: 'var(--primary-red)' }}>Registrations Closed</h2>
+            ) : (
+              <>
+                <h2>{config.registrationHeading || "Registration Closes In"}</h2>
+                <div className={styles.countdownTimer}>
+                  <div className={styles.countdownBox}>
+                    <span>{String(timeLeft.days).padStart(2, '0')}</span>
+                    <span className={styles.countdownLabel}>Days</span>
+                  </div>
+                  <span>:</span>
+                  <div className={styles.countdownBox}>
+                    <span>{String(timeLeft.hours).padStart(2, '0')}</span>
+                    <span className={styles.countdownLabel}>Hours</span>
+                  </div>
+                  <span>:</span>
+                  <div className={styles.countdownBox}>
+                    <span>{String(timeLeft.minutes).padStart(2, '0')}</span>
+                    <span className={styles.countdownLabel}>Minutes</span>
+                  </div>
+                  <span>:</span>
+                  <div className={styles.countdownBox}>
+                    <span>{String(timeLeft.seconds).padStart(2, '0')}</span>
+                    <span className={styles.countdownLabel}>Seconds</span>
+                  </div>
+                </div>
+              </>
+            )}
+            
+            <div className={styles.ctaSection}>
+              <button 
+                className="btn-primary" 
+                disabled={isClosed}
+                title={isClosed ? "Registrations are now closed" : ""}
+                onClick={() => !isClosed && (window.location.href = config.registrationButtonLink || '/register')}
+                style={{ fontSize: '1.25rem', padding: '1rem 2rem' }}
+              >
+                {config.registrationButtonText || "Register Your Team"}
+              </button>
+              <span className={styles.deadlineText}>{config.registrationFooterText || "Registration closes on"} {formatDate(deadlineDate)}</span>
             </div>
           </>
         )}
-        
-        <div className={styles.ctaSection}>
-          <button 
-            className="btn-primary" 
-            disabled={isClosed}
-            title={isClosed ? "Registrations are now closed" : ""}
-            onClick={() => !isClosed && (window.location.href = config.registrationButtonLink || '/register')}
-            style={{ fontSize: '1.25rem', padding: '1rem 2rem' }}
-          >
-            {config.registrationButtonText || "Register Your Team"}
-          </button>
-          <span className={styles.deadlineText}>{config.registrationFooterText || "Registration closes on"} {formatDate(deadlineDate)}</span>
-        </div>
       </section>
 
       <div className="container">
