@@ -1,8 +1,10 @@
 "use client";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from '../admin.module.css';
 import { openPdfInNewTab } from '@/lib/pdfHelper';
+import ReactCrop, { centerCrop, makeAspectCrop } from 'react-image-crop';
+import 'react-image-crop/dist/ReactCrop.css';
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -22,6 +24,12 @@ export default function AdminDashboard() {
   const [memberMsg, setMemberMsg] = useState({ type: '', text: '' });
   const [heroMediaState, setHeroMediaState] = useState([]);
   const [uploadingHeroMedia, setUploadingHeroMedia] = useState(false);
+  
+  // Crop state
+  const [cropModalSrc, setCropModalSrc] = useState(null);
+  const [crop, setCrop] = useState();
+  const [completedCrop, setCompletedCrop] = useState(null);
+  const imgRef = useRef(null);
 
   useEffect(() => {
     const session = localStorage.getItem('adminSession');
@@ -187,29 +195,68 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleHeroMediaUpload = async (e) => {
+  function onImageLoad(e) {
+    const { width, height } = e.currentTarget;
+    const cropAspectRatio = 16 / 9;
+    const initialCrop = centerCrop(
+      makeAspectCrop({ unit: '%', width: 90 }, cropAspectRatio, width, height),
+      width, height
+    );
+    setCrop(initialCrop);
+  }
+
+  const handleHeroMediaUpload = (e) => {
     const files = Array.from(e.target.files);
     if (files.length === 0) return;
     
-    setUploadingHeroMedia(true);
-    const newMedia = [];
-    
-    for (const file of files) {
-      if (file.size > 2.5 * 1024 * 1024) {
-        alert(`File ${file.name} is too large. Max 2.5MB.`);
-        continue;
-      }
-      const base64 = await new Promise(resolve => {
-        const reader = new FileReader();
-        reader.onload = e => resolve(e.target.result);
-        reader.readAsDataURL(file);
-      });
-      newMedia.push(base64);
+    const file = files[0];
+    if (file.size > 5 * 1024 * 1024) {
+      alert(`File ${file.name} is too large. Max 5MB.`);
+      e.target.value = '';
+      return;
     }
     
-    setHeroMediaState([...heroMediaState, ...newMedia]);
-    setUploadingHeroMedia(false);
+    const reader = new FileReader();
+    reader.onload = () => {
+      setCropModalSrc(reader.result);
+      setCompletedCrop(null);
+    };
+    reader.readAsDataURL(file);
     e.target.value = ''; // reset file input
+  };
+
+  const getCroppedImg = async (image, crop) => {
+    const canvas = document.createElement('canvas');
+    const scaleX = image.naturalWidth / image.width;
+    const scaleY = image.naturalHeight / image.height;
+    canvas.width = crop.width;
+    canvas.height = crop.height;
+    const ctx = canvas.getContext('2d');
+    
+    ctx.drawImage(
+      image,
+      crop.x * scaleX,
+      crop.y * scaleY,
+      crop.width * scaleX,
+      crop.height * scaleY,
+      0,
+      0,
+      crop.width,
+      crop.height
+    );
+
+    return canvas.toDataURL('image/jpeg', 0.9);
+  };
+
+  const applyCrop = async () => {
+    if (!completedCrop || !imgRef.current) return;
+    try {
+      const croppedBase64 = await getCroppedImg(imgRef.current, completedCrop);
+      setHeroMediaState([...heroMediaState, croppedBase64]);
+      setCropModalSrc(null);
+    } catch (e) {
+      alert("Error cropping image");
+    }
   };
 
   const handleSaveHeroMedia = async () => {
@@ -1160,6 +1207,37 @@ export default function AdminDashboard() {
                 onMouseLeave={e => { e.currentTarget.style.background = '#e2e8f0'; e.currentTarget.style.borderColor = '#d1d5db'; }}
               >
                 Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── CROP MODAL ── */}
+      {cropModalSrc && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.8)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 4000, padding: '1rem' }}>
+          <div style={{ background: '#fff', borderRadius: '8px', padding: '1rem', width: '100%', maxWidth: '800px', maxHeight: '95vh', display: 'flex', flexDirection: 'column' }}>
+            <h2 style={{ marginBottom: '1rem', color: '#1B3F8B' }}>Crop Hero Image</h2>
+            <div style={{ overflow: 'auto', flex: 1, display: 'flex', justifyContent: 'center', background: '#333' }}>
+              <ReactCrop
+                crop={crop}
+                onChange={c => setCrop(c)}
+                onComplete={c => setCompletedCrop(c)}
+                aspect={16 / 9}
+              >
+                <img
+                  ref={imgRef}
+                  src={cropModalSrc}
+                  alt="Crop me"
+                  onLoad={onImageLoad}
+                  style={{ maxHeight: '60vh', objectFit: 'contain' }}
+                />
+              </ReactCrop>
+            </div>
+            <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem', justifyContent: 'flex-end' }}>
+              <button className="btn-secondary" onClick={() => setCropModalSrc(null)}>Cancel</button>
+              <button className="btn-primary" onClick={applyCrop} disabled={!completedCrop?.width || !completedCrop?.height}>
+                Crop & Add
               </button>
             </div>
           </div>
