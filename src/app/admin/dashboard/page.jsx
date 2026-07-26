@@ -115,6 +115,31 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleTimerConfigUpdate = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch('/api/admin/config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'timerConfig',
+          deadline,
+          heading: regHeading,
+          buttonText: regBtnText,
+          buttonLink: regBtnLink,
+          footerText: regFooterText
+        })
+      });
+      if (res.ok) {
+        alert('Site configuration updated successfully!');
+      } else {
+        alert('Failed to update configuration.');
+      }
+    } catch {
+      alert('Connection error.');
+    }
+  };
+
   const handleDeleteTeam = async (teamId) => {
     if (!confirm(`Are you sure you want to permanently delete team ${teamId}? This will remove all their members and data.`)) return;
     try {
@@ -488,8 +513,54 @@ export default function AdminDashboard() {
           textTransform: 'uppercase', letterSpacing: '0.08em', whiteSpace: 'nowrap',
           padding: '0.25rem 0.75rem', background: '#f1f5f9', borderRadius: '20px',
           border: '1px solid #e2e8f0',
-        }}>Security Settings</span>
+        }}>Site & Security Settings</span>
         <div style={{ flex: 1, height: '1px', background: '#e2e8f0' }}></div>
+      </div>
+
+      {/* ── SITE CONFIGURATION ── */}
+      <div className={styles.settingsSection} style={{ marginBottom: '1.5rem' }}>
+        <h2 className={styles.settingsTitle}>
+          <span style={{
+            width: '32px', height: '32px', borderRadius: '8px',
+            background: 'rgba(16,185,129,0.1)', color: '#10b981',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
+          }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+          </span>
+          Timer & Event Configuration
+        </h2>
+        <form onSubmit={handleTimerConfigUpdate}>
+          <div className={styles.grid2Col}>
+            <div className={styles.formGroup}>
+              <label className={styles.label}>Heading</label>
+              <input className={styles.input} required value={regHeading} onChange={e => setRegHeading(e.target.value)} />
+            </div>
+            <div className={styles.formGroup}>
+              <label className={styles.label}>Deadline Date</label>
+              <input type="datetime-local" className={styles.input} required value={deadline} onChange={e => setDeadline(e.target.value)} />
+            </div>
+            <div className={styles.formGroup}>
+              <label className={styles.label}>Button Text</label>
+              <input className={styles.input} required value={regBtnText} onChange={e => setRegBtnText(e.target.value)} />
+            </div>
+            <div className={styles.formGroup}>
+              <label className={styles.label}>Button Link</label>
+              <input className={styles.input} required value={regBtnLink} onChange={e => setRegBtnLink(e.target.value)} />
+            </div>
+            <div className={styles.formGroup} style={{ gridColumn: '1 / -1' }}>
+              <label className={styles.label}>Footer Text</label>
+              <input className={styles.input} required value={regFooterText} onChange={e => setRegFooterText(e.target.value)} />
+            </div>
+          </div>
+          <button type="submit" className="btn-primary" style={{ borderRadius: '8px', fontWeight: 700, marginTop: '0.5rem' }}>
+            Save Configuration
+          </button>
+        </form>
       </div>
 
       {/* ── SETTINGS GRID ── */}
