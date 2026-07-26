@@ -7,7 +7,7 @@ export async function POST(req) {
     const { teamId, password } = await req.json();
 
     const config = await getConfig();
-    if (config && config.registrationButtonLink === '/team/login' && config.deadline) {
+    if (config && config.registrationButtonLink?.toLowerCase().includes('login') && config.deadline) {
       if (new Date().getTime() > new Date(config.deadline).getTime()) {
         return NextResponse.json({ error: "Login window has closed." }, { status: 403 });
       }

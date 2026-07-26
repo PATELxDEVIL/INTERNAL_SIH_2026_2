@@ -16,7 +16,7 @@ export default function TeamLogin() {
     fetch('/api/admin/config')
       .then(res => res.json())
       .then(data => {
-        if (data && data.registrationButtonLink === '/team/login' && data.deadline) {
+        if (data && data.registrationButtonLink?.toLowerCase().includes('login') && data.deadline) {
           const deadlineTime = new Date(data.deadline).getTime();
           if (new Date().getTime() > deadlineTime) {
             setIsClosed(true);
