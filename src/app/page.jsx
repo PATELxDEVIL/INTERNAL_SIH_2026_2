@@ -136,7 +136,11 @@ export default function Home() {
       </section>
 
       <section className={styles.countdownSection}>
-        {isClosed ? (
+        {!configLoaded ? (
+          <div style={{ minHeight: '280px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', opacity: 0.6 }}>
+            <p style={{ fontSize: '1.25rem', fontWeight: 600, color: 'var(--text-dark)' }}>Loading Timer...</p>
+          </div>
+        ) : isClosed ? (
           <h2 style={{ color: 'var(--primary-red)' }}>Registrations Closed</h2>
         ) : (
           <>
