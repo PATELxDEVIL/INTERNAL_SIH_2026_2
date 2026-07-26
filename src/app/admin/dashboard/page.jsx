@@ -20,6 +20,8 @@ export default function AdminDashboard() {
   const [selectedTeam, setSelectedTeam] = useState(null);
   const [editingMember, setEditingMember] = useState(null);
   const [memberMsg, setMemberMsg] = useState({ type: '', text: '' });
+  const [heroMediaState, setHeroMediaState] = useState([]);
+  const [uploadingHeroMedia, setUploadingHeroMedia] = useState(false);
 
   useEffect(() => {
     const session = localStorage.getItem('adminSession');
@@ -48,6 +50,7 @@ export default function AdminDashboard() {
         if (configData.registrationButtonText) setRegBtnText(configData.registrationButtonText);
         if (configData.registrationButtonLink) setRegBtnLink(configData.registrationButtonLink);
         if (configData.registrationFooterText) setRegFooterText(configData.registrationFooterText);
+        if (configData.heroMedia) setHeroMediaState(configData.heroMedia);
       }
     } catch (e) {
       console.error(e);
@@ -182,6 +185,55 @@ export default function AdminDashboard() {
     } catch (err) {
       setMemberMsg({ type: 'error', text: 'Failed to update member.' });
     }
+  };
+
+  const handleHeroMediaUpload = async (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
+    
+    setUploadingHeroMedia(true);
+    const newMedia = [];
+    
+    for (const file of files) {
+      if (file.size > 2.5 * 1024 * 1024) {
+        alert(`File ${file.name} is too large. Max 2.5MB.`);
+        continue;
+      }
+      const base64 = await new Promise(resolve => {
+        const reader = new FileReader();
+        reader.onload = e => resolve(e.target.result);
+        reader.readAsDataURL(file);
+      });
+      newMedia.push(base64);
+    }
+    
+    setHeroMediaState([...heroMediaState, ...newMedia]);
+    setUploadingHeroMedia(false);
+    e.target.value = ''; // reset file input
+  };
+
+  const handleSaveHeroMedia = async () => {
+    try {
+      setUploadingHeroMedia(true);
+      const res = await fetch('/api/admin/config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'heroMedia',
+          files: heroMediaState.map(img => ({ data: img }))
+        })
+      });
+      if (res.ok) alert("Hero Media updated successfully!");
+      else alert("Failed to update Hero Media");
+    } catch {
+      alert("Error saving Hero Media");
+    } finally {
+      setUploadingHeroMedia(false);
+    }
+  };
+
+  const removeHeroMedia = (index) => {
+    setHeroMediaState(heroMediaState.filter((_, i) => i !== index));
   };
 
   const [newProblem, setNewProblem] = useState({ title: '', description: '' });
@@ -585,6 +637,72 @@ export default function AdminDashboard() {
             Save Configuration
           </button>
         </form>
+      </div>
+
+      {/* ── HERO MEDIA CONFIGURATION ── */}
+      <div className={styles.settingsSection} style={{ marginBottom: '1.5rem' }}>
+        <h2 className={styles.settingsTitle}>
+          <span style={{
+            width: '32px', height: '32px', borderRadius: '8px',
+            background: 'rgba(236,72,153,0.1)', color: '#ec4899',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
+          }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <circle cx="8.5" cy="8.5" r="1.5"></circle>
+              <polyline points="21 15 16 10 5 21"></polyline>
+            </svg>
+          </span>
+          Hero Section Images
+        </h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
+          {heroMediaState.map((img, index) => (
+            <div key={index} style={{ position: 'relative', width: '100%', paddingTop: '56.25%', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e2e8f0', background: '#f8fafc' }}>
+              <img src={img} alt={`Hero ${index}`} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+              <button 
+                type="button"
+                onClick={() => removeHeroMedia(index)}
+                style={{
+                  position: 'absolute', top: '0.5rem', right: '0.5rem',
+                  background: 'rgba(239,68,68,0.9)', color: 'white', border: 'none',
+                  width: '24px', height: '24px', borderRadius: '50%',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                }}
+                title="Remove Image"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
+          ))}
+          {heroMediaState.length === 0 && (
+            <div style={{ gridColumn: '1 / -1', color: '#64748b', fontSize: '0.875rem', fontStyle: 'italic', padding: '1rem' }}>
+              No custom hero images. Defaults will be shown.
+            </div>
+          )}
+        </div>
+        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
+          <label className="btn-primary" style={{ background: '#f8fafc', color: '#1B3F8B', border: '1.5px solid #1B3F8B', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Add Images
+            <input type="file" multiple accept="image/*" onChange={handleHeroMediaUpload} style={{ display: 'none' }} />
+          </label>
+          <button 
+            type="button" 
+            className="btn-primary" 
+            onClick={handleSaveHeroMedia} 
+            disabled={uploadingHeroMedia}
+            style={{ borderRadius: '8px', fontWeight: 700 }}
+          >
+            {uploadingHeroMedia ? 'Saving...' : 'Save Hero Media'}
+          </button>
+        </div>
       </div>
 
       {/* ── SETTINGS GRID ── */}
